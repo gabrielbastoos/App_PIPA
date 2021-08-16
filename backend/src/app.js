@@ -1,5 +1,6 @@
 const express = require('express');
-const sequelize = require('./databaseConfig/databaseConnection');
+const sequelize = require('./database/databaseConnection');
+const hcsr04 = require('./models/hcsr04')
 
 module.exports = () => {
     const app = express();
