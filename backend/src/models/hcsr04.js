@@ -1,5 +1,5 @@
 const { Model, DataTypes } = require('sequelize');
-const sequelize = require('../database/databaseConnection');
+const sequelize = require('../databaseConfig/databaseConnection');
 
 class HcSr04 extends Model {}
 HcSr04.init({
@@ -10,10 +10,11 @@ HcSr04.init({
         primaryKey: true,  
     },
     distanceOfTop: DataTypes.FLOAT,
-    dateTime: DataTypes.DATE,
+    dateTime: DataTypes.DATE
 },
 {
     sequelize,
     modelName: 'HcSr04'
 });
+
 module.exports = HcSr04;
