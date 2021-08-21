@@ -1,9 +1,28 @@
 const express = require('express');
-const app = express();
+const sequelize = require('./database/databaseConnection');
+const hcsr04 = require('./models/hcsr04');
+
 const router = express.Router();
-//Rotas
 const index = require('./routes/index');
 const homeRoute = require('./routes/homeRoute');
-app.use('/', index);
-app.use('/home', homeRoute);
-module.exports = app;
+
+module.exports = () => {
+    const app = express();
+  
+    app.use(express.json());
+  
+    app.use('/', index);
+    app.use('/home', homeRoute);
+
+    sequelize
+      .sync()
+      .then( () => {
+        console.log('Syncing with the database successful.')
+      })
+      .catch( error => {
+        console.log(error);
+      });
+      
+    return app;
+  };
+
