@@ -14,12 +14,7 @@ const sequelize = new Sequelize(
         freezeTableName: true
       }
    });
-
-  //  const sequelize = new Sequelize('postgres://postgres:postgres@localhost:5433/pipa', {
-  //   dialect: 'postgres',
-  //   protocol: 'postgres'
-  //   });
-
+   
   try {
     sequelize.authenticate();
     console.log('Connection has been established successfully.');

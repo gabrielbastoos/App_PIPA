@@ -1,12 +1,19 @@
 const express = require('express');
 const sequelize = require('./database/databaseConnection');
-const hcsr04 = require('./models/hcsr04')
+const hcsr04 = require('./models/hcsr04');
+
+const router = express.Router();
+const index = require('./routes/index');
+const homeRoute = require('./routes/homeRoute');
 
 module.exports = () => {
     const app = express();
   
     app.use(express.json());
   
+    app.use('/', index);
+    app.use('/home', homeRoute);
+
     sequelize
       .sync()
       .then( () => {
@@ -18,11 +25,4 @@ module.exports = () => {
       
     return app;
   };
-//const app = express();
-// const router = express.Router();
-// //Rotas
-// const index = require('./routes/index');
-// const homeRoute = require('./routes/homeRoute');
-// app.use('/', index);
-// app.use('/home', homeRoute);
-// module.exports = app;
+
