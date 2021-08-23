@@ -1,7 +1,7 @@
 const express = require('express');
 const sequelize = require('./database/databaseConnection');
 const hcsr04 = require('./models/hcsr04');
-const sensorModel = require('./models/sensorModel');
+const subscriber = require('./mqttSubscriber/orchestratoSubscriber')
 
 const router = express.Router();
 const index = require('./routes/index');
