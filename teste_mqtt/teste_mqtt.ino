@@ -6,8 +6,8 @@
 
 //defines:
 //defines de id mqtt e tópicos para publicação e subscribe
-#define TOPICO_SUBSCRIBE "PIPATOPIC"     //tópico MQTT de escuta
-#define TOPICO_PUBLISH   "nodemcu"    //tópico MQTT de envio de informações para Broker
+#define TOPICO_SUBSCRIBE "NODEMCU_PIPA"     //tópico MQTT de escuta
+#define TOPICO_PUBLISH   "NODEJS_PIPA"    //tópico MQTT de envio de informações para Broker
                                                    //IMPORTANTE: recomendamos fortemente alterar os nomes
                                                    //            desses tópicos. Caso contrário, há grandes
                                                    //            chances de você controlar e monitorar o NodeMCU
@@ -39,8 +39,9 @@ const char* SSID = "Wifi"; // SSID / nome da rede WI-FI que deseja se conectar
 const char* PASSWORD = "w1f1gabriel"; // Senha da rede WI-FI que deseja se conectar
   
 // MQTT
-const char* BROKER_MQTT = "broker.hivemq.com"; //URL do broker MQTT que se deseja utilizar
-int BROKER_PORT = 1883; // Porta do Broker MQTT
+const char* BROKER_MQTT = "1edb5962ccd94d1eb94987063a8f3b6f.s1.eu.hivemq.cloud";
+//const char* BROKER_MQTT = "broker.hivemq.com"; //URL do broker MQTT que se deseja utilizar
+int BROKER_PORT = 8883; // Porta do Broker MQTT
  
  
 //Variáveis e objetos globais
@@ -263,7 +264,7 @@ void VerificaConexoesWiFIEMQTT(void)
 void EnviaEstadoOutputMQTT(void)
 {
     if (EstadoSaida == '0')
-      MQTT.publish(TOPICO_PUBLISH, "D");
+      MQTT.publish(TOPICO_PUBLISH, "{\"s1\":true,\"s2\":false,\"s3\":false,\"s4\":false}");
  
     if (EstadoSaida == '1')
       MQTT.publish(TOPICO_PUBLISH, "L");
@@ -297,4 +298,7 @@ void loop()
  
     //keep-alive da comunicação com broker MQTT
     MQTT.loop();
+
+    MQTT.publish(TOPICO_PUBLISH, "{\"s1\":true,\"s2\":false,\"s3\":false,\"s4\":false}");
+    delay(1000);
 }

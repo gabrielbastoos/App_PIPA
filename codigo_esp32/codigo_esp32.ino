@@ -1,27 +1,51 @@
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <ESPmDNS.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 #include <Ultrasonic.h>
 #include <PubSubClient.h>
 
-#define TOPICO_SUBSCRIBE "PIPATOPIC"     //tópico MQTT de escuta
-#define TOPICO_PUBLISH  "nodemcuPIPA"    //tópico MQTT de envio de informações para Broker
+#define TOPICO_SUBSCRIBE "NODEMCU_PIPA"    //tópico MQTT de escuta
+#define TOPICO_PUBLISH  "NODEJS_PIPA"   //tópico MQTT de envio de informações para Broker
 //IMPORTANTE: recomendamos fortemente alterar os nomes
 //            desses tópicos. Caso contrário, há grandes
 //            chances de você controlar e monitorar o NodeMCU
 //            de outra pessoa.
-#define ID_MQTT  "clientId-ZMjPkCVLXN"     //id mqtt (para identificação de sessão)
+#define ID_MQTT  "NODEMCU"     //id mqtt (para identificação de sessão)
 //IMPORTANTE: este deve ser único no broker (ou seja,
 //            se um client MQTT tentar entrar com o mesmo
 //            id de outro já conectado ao broker, o broker
 //            irá fechar a conexão de um deles).
 
+const char* test_root_ca= \
+     "-----BEGIN CERTIFICATE-----\n" \
+     "MIIDSjCCAjKgAwIBAgIQRK+wgNajJ7qJMDmGLvhAazANBgkqhkiG9w0BAQUFADA/\n" \
+     "MSQwIgYDVQQKExtEaWdpdGFsIFNpZ25hdHVyZSBUcnVzdCBDby4xFzAVBgNVBAMT\n" \
+     "DkRTVCBSb290IENBIFgzMB4XDTAwMDkzMDIxMTIxOVoXDTIxMDkzMDE0MDExNVow\n" \
+     "PzEkMCIGA1UEChMbRGlnaXRhbCBTaWduYXR1cmUgVHJ1c3QgQ28uMRcwFQYDVQQD\n" \
+     "Ew5EU1QgUm9vdCBDQSBYMzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB\n" \
+     "AN+v6ZdQCINXtMxiZfaQguzH0yxrMMpb7NnDfcdAwRgUi+DoM3ZJKuM/IUmTrE4O\n" \
+     "rz5Iy2Xu/NMhD2XSKtkyj4zl93ewEnu1lcCJo6m67XMuegwGMoOifooUMM0RoOEq\n" \
+     "OLl5CjH9UL2AZd+3UWODyOKIYepLYYHsUmu5ouJLGiifSKOeDNoJjj4XLh7dIN9b\n" \
+     "xiqKqy69cK3FCxolkHRyxXtqqzTWMIn/5WgTe1QLyNau7Fqckh49ZLOMxt+/yUFw\n" \
+     "7BZy1SbsOFU5Q9D8/RhcQPGX69Wam40dutolucbY38EVAjqr2m7xPi71XAicPNaD\n" \
+     "aeQQmxkqtilX4+U9m5/wAl0CAwEAAaNCMEAwDwYDVR0TAQH/BAUwAwEB/zAOBgNV\n" \
+     "HQ8BAf8EBAMCAQYwHQYDVR0OBBYEFMSnsaR7LHH62+FLkHX/xBVghYkQMA0GCSqG\n" \
+     "SIb3DQEBBQUAA4IBAQCjGiybFwBcqR7uKGY3Or+Dxz9LwwmglSBd49lZRNI+DT69\n" \
+     "ikugdB/OEIKcdBodfpga3csTS7MgROSR6cz8faXbauX+5v3gTt23ADq1cEmv8uXr\n" \
+     "AvHRAosZy5Q6XkjEGB5YGV8eAlrwDPGxrancWYaLbumR9YbK+rlmM6pZW87ipxZz\n" \
+     "R8srzJmwN0jP41ZL9c8PDHIyh8bwRLtTcm1D9SZImlJnt1ir/md2cXjbDaJWFBM5\n" \
+     "JDGFoqgCWjBH4d1QB7wCCZAA62RjYJsWvIjJEubSfZGL+T0yjWW06XyxV3bqxbYo\n" \
+     "Ob8VZRzI9neWagqNdwvYkQsEjgfbKbYK7p2CNTUQ\n" \
+     "-----END CERTIFICATE-----\n";
 
+     
+const char* BROKER_MQTT = "d0b5f4bcb08a43189a9bd4e2bef485db.s1.eu.hivemq.cloud";
 
-const char* BROKER_MQTT = "broker.hivemq.com"; //URL do broker MQTT que se deseja utilizar
-int BROKER_PORT = 1883; // Porta do Broker MQTT
-WiFiClient espClient;
+int BROKER_PORT = 8883; // Porta do Broker MQTT
+
+WiFiClientSecure espClient;
 PubSubClient MQTT(espClient); // Instancia o Cliente MQTT passando o objeto espClient
 
 
@@ -56,6 +80,7 @@ void reconectWiFi()
 {
     //se já está conectado a rede WI-FI, nada é feito. 
     //Caso contrário, são efetuadas tentativas de conexão
+    espClient.setCACert(test_root_ca);
     if (WiFi.status() == WL_CONNECTED)
         return;
          
@@ -80,7 +105,7 @@ void reconnectMQTT()
   {
     Serial.print("* Tentando se conectar ao Broker MQTT: ");
     Serial.println(BROKER_MQTT);
-    if (MQTT.connect(ID_MQTT))
+    if (MQTT.connect(ID_MQTT,"pipauser","P1p4_mqtt"))
     {
       Serial.println("Conectado com sucesso ao broker MQTT!");
       MQTT.subscribe(TOPICO_SUBSCRIBE);
@@ -111,14 +136,16 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length)
   if (msg.equals("L"))
   {
     digitalWrite(ledInterno, LOW);
-    char teste[40];
-    //S1%iS2%iS3%iS4%i
-    //digitalRead(sensorA1),digitalRead(sensorB1),digitalRead(sensorB2),digitalRead(sensorB2),  
-    int sensorB2_leitura = digitalRead(sensorB2);
-    int sensorB1_leitura = digitalRead(sensorB1);
-    int sensorA1_leitura = digitalRead(sensorA1);
-    sprintf(teste, "S1_%dS2_%dS3_%dS4_%d_PERCENT_%f", sensorA1_leitura, sensorB1_leitura, sensorB2_leitura, sensorB2_leitura, 100*cmMsec/altura_da_caixa);
-    MQTT.publish(TOPICO_PUBLISH, teste);
+  char teste[40];
+  microsec = ultrasonic.timing();
+  cmMsec = ultrasonic.convert(microsec, Ultrasonic::CM);
+  int sensorB2_leitura = digitalRead(sensorB2);
+  int sensorB1_leitura = digitalRead(sensorB1);
+  int sensorA1_leitura = digitalRead(sensorA1);
+  //100*cmMsec/altura_da_caixa
+  sprintf(teste, "{\"s1\":%d,\"s2\":%d,\"s3\":%d,\"s4\":%d}", sensorA1_leitura, sensorB1_leitura, sensorB2_leitura, sensorB2_leitura);
+   
+  MQTT.publish(TOPICO_PUBLISH, teste);
     //EstadoSaida = '1';
   }
 
@@ -196,7 +223,7 @@ void loop() {
   VerificaConexoesWiFIEMQTT();
   //keep-alive da comunicação com broker MQTT
   MQTT.loop();
-  microsec = ultrasonic.timing();
-  cmMsec = ultrasonic.convert(microsec, Ultrasonic::CM);
+
   ArduinoOTA.handle();
+    
 }
