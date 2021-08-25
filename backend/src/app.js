@@ -1,7 +1,8 @@
 const express = require('express');
 const sequelize = require('./database/databaseConnection');
 const hcsr04 = require('./models/hcsr04');
-const subscriber = require('./mqttSubscriber/orchestratoSubscriber')
+const subscriber = require('./mqtt/orchestratorSubscriber')
+const publisher = require('./mqtt/publisher')
 
 const router = express.Router();
 const index = require('./routes/index');
