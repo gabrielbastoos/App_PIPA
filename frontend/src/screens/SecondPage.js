@@ -1,52 +1,53 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Table, TableWrapper, Row, Rows, Col } from 'react-native-table-component';
+import {StyleSheet, Text, View} from 'react-native';
 
-const CONTENT = {
-  tableHead: ['Column 0/Row 0', 'Column 1', 'Column 2', 'Column 3'],
-  tableTitle: ['Row', 'Row 2', 'Row 3', 'Row 4'],
-  tableData: [
-    ['1', '2', '3'],
-    ['a', 'b', 'c'],
-    ['1', '2', '3'],
-    ['a', 'b', 'c'],
-  ],
-};
+import InteractiveCard, {Header, Content} from 'react-native-interactive-card';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Table borderStyle={{ borderWidth: 1 }}>
-        <Row
-          data={CONTENT.tableHead}
-          flexArr={[1, 2, 1, 1]}
-          style={styles.head}
-          textStyle={styles.text}
-        />
-        <TableWrapper style={styles.wrapper}>
-          <Col
-            data={CONTENT.tableTitle}
-            style={styles.title}
-            heightArr={[28, 28]}
-            textStyle={styles.text}
-          />
-          <Rows
-            data={CONTENT.tableData}
-            flexArr={[2, 1, 1]}
-            style={styles.row}
-            textStyle={styles.text}
-          />
-        </TableWrapper>
-      </Table>
-    </View>
-  );
+export default class CustomTransition extends React.Component {
+	constructor() {
+		super();
+	}
+
+	render() {
+		return (
+			<View style={styles.container}>
+				<InteractiveCard overlayOpacity={1}>
+					<Header>
+						<View style={styles.cardHeader}>
+							<Text style={styles.text}>Caixa d'água 1</Text>
+						</View>
+					</Header>
+					<Content enterFrom={"right"}>
+						<View style={styles.content}>
+							<Text style={styles.text}>100%</Text>
+						</View>
+					</Content>
+				</InteractiveCard>
+				<InteractiveCard overlayOpacity={1}>
+					<Header>
+						<View style={styles.cardHeader}>
+							<Text style={styles.text}>Caixa d'água 2</Text>
+						</View>
+					</Header>
+					<Content enterFrom={"right"}>
+						<View style={styles.content}>
+							<Text style={styles.text}>57%</Text>
+						</View>
+					</Content>
+				</InteractiveCard>
+			</View>
+		);
+	}
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, paddingTop: 100, backgroundColor: '#fff' },
-  head: { height: 40, backgroundColor: 'orange' },
-  wrapper: { flexDirection: 'row' },
-  title: { flex: 1, backgroundColor: '#2ecc71' },
-  row: { height: 28 },
-  text: { textAlign: 'center' },
+	container: {
+		flex: 1,
+		backgroundColor: '#87CEFA',
+		justifyContent: 'center',
+		padding: 10
+	},
+	cardHeader: {backgroundColor: "#68E9FF",padding: 30,marginBottom: 10, borderRadius: 5},
+	text: {fontSize: 40, opacity: 0.6,textAlign: 'center',fontWeight: 'bold'},
+	content: {width: "90%", padding: 50, backgroundColor: "#54B8AC"},
 });
