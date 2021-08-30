@@ -52,7 +52,7 @@ PubSubClient MQTT(espClient); // Instancia o Cliente MQTT passando o objeto espC
 long microsec;
 float cmMsec;
 
-int altura_da_caixa = 100;
+int altura_da_caixa = 70;
 
 int ledInterno = 2;
 
@@ -74,13 +74,13 @@ void VerificaConexoesWiFIEMQTT(void)
   if (!MQTT.connected())
     reconnectMQTT(); //se não há conexão com o Broker, a conexão é refeita
 
-  reconectWiFi(); //se não há conexão com o WiFI, a conexão é refeita
+  //reconectWiFi(); //se não há conexão com o WiFI, a conexão é refeita
 }
 void reconectWiFi() 
 {
     //se já está conectado a rede WI-FI, nada é feito. 
     //Caso contrário, são efetuadas tentativas de conexão
-    espClient.setCACert(test_root_ca);
+    
     if (WiFi.status() == WL_CONNECTED)
         return;
          
@@ -136,30 +136,35 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length)
   if (msg.equals("L"))
   {
     digitalWrite(ledInterno, LOW);
-  char teste[40];
-  microsec = ultrasonic.timing();
-  cmMsec = ultrasonic.convert(microsec, Ultrasonic::CM);
-  int sensorB2_leitura = digitalRead(sensorB2);
-  int sensorB1_leitura = digitalRead(sensorB1);
-  int sensorA1_leitura = digitalRead(sensorA1);
-  //100*cmMsec/altura_da_caixa
-  sprintf(teste, "{\"s1\":%d,\"s2\":%d,\"s3\":%d,\"s4\":%d}", sensorA1_leitura, sensorB1_leitura, sensorB2_leitura, sensorB2_leitura);
+    char teste[60];
+    microsec = ultrasonic.timing();
+    cmMsec = ultrasonic.convert(microsec, Ultrasonic::CM);
+    delay(100);
+    int sensorB2_leitura = digitalRead(sensorB2);
+    delay(10);
+    int sensorB1_leitura = digitalRead(sensorB1);
+    delay(10);
+    int sensorA1_leitura = digitalRead(sensorA1);
+    //100*cmMsec/altura_da_caixa
+    sprintf(teste, "{\"s1\":%d,\"s2\":%d,\"s3\":%d,\"s4\":%d,\"volume\":%f}", sensorA1_leitura, sensorB1_leitura, sensorB2_leitura, sensorB2_leitura,100*cmMsec/altura_da_caixa);
    
-  MQTT.publish(TOPICO_PUBLISH, teste);
+    MQTT.publish(TOPICO_PUBLISH, teste);
     //EstadoSaida = '1';
+    //msg = "";
   }
 
   //verifica se deve colocar nivel alto de tensão na saída LED_INTERNO:
-  if (msg.equals("D"))
+  else if (msg.equals("D"))
   {
     digitalWrite(ledInterno, HIGH);
     //EstadoSaida = '0';
+    //msg = "";
   }
 
 }
 
 void setup() {
-
+  espClient.setCACert(test_root_ca);
   MQTT.setServer(BROKER_MQTT, BROKER_PORT);   //informa qual broker e porta deve ser conectado
   MQTT.setCallback(mqtt_callback);            //atribui função de callback (função chamada quando qualquer informação de um dos tópicos subescritos chega)
   pinMode(sensorA1, INPUT);
