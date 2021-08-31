@@ -1,4 +1,4 @@
-const Sensor = require('../models/sensorModel');
+const Sensor = require('../models/sensors');
 const Response = require('../shared/response-model');
 
 class SensorRepo{
