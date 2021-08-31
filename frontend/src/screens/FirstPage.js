@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    marginTop: screen.height * 0.08,
+    marginTop: screen.height * 0.4,
     alignItems: "center",
   },
 

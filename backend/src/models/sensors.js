@@ -1,22 +1,23 @@
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../database/databaseConnection');
 
-class SensorModel extends Model {}
-SensorModel.init({
+class Sensors extends Model {}
+Sensors.init({
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         allowNull: false,
         primaryKey: true,  
     },
-    s1: DataTypes.BOOLEAN,
-    s2: DataTypes.BOOLEAN,
-    s3: DataTypes.BOOLEAN,
-    s4: DataTypes.BOOLEAN
+    sc1: DataTypes.BOOLEAN,
+    sc2: DataTypes.BOOLEAN,
+    scx1: DataTypes.BOOLEAN,
+    scx2: DataTypes.BOOLEAN,
+    volume: DataTypes.FLOAT
 },
 {
     sequelize,
-    modelName: 'SensorModel'
+    modelName: 'Sensors'
 });
 
-module.exports = SensorModel;
+module.exports = Sensors;
