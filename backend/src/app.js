@@ -1,12 +1,11 @@
 const express = require('express');
 const sequelize = require('./database/databaseConnection');
-const hcsr04 = require('./models/hcsr04');
 const subscriber = require('./mqtt/orchestratorSubscriber')
 const publisher = require('./mqtt/publisher')
 
 const router = express.Router();
 const index = require('./routes/index');
-const homeRoute = require('./routes/homeRoute');
+const statusRoute = require('./routes/statusRoute');
 
 module.exports = () => {
     const app = express();
@@ -14,7 +13,7 @@ module.exports = () => {
     app.use(express.json());
   
     app.use('/', index);
-    app.use('/home', homeRoute);
+    app.use('/status', statusRoute);
 
     sequelize
       .sync()

@@ -10,6 +10,11 @@ const sequelize = new Sequelize(
        host: DatabaseSettings.host,
        port: DatabaseSettings.port,
        dialect: DatabaseSettings.dialect,
+       dialectOptions: {
+         useUTC:false, 
+         timezone:"-03:00"
+        },
+       timezone:"-03:00",
        define: {
         freezeTableName: true
       }

@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/homeController');
 const SensorRepo = require('../repo/sensorRepo');
 
 router.get('/', async (req, res) => {
@@ -10,7 +9,5 @@ router.get('/', async (req, res) => {
     }
     res.json(resp);
 });
-router.post('/', controller.post);
-router.put('/:id', controller.put);
-router.delete('/:id', controller.delete);
+
 module.exports = router;
