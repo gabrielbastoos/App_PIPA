@@ -3,7 +3,16 @@ const connection = require('./connection');
 //initialize the MQTT client
 var client = connection;
 
-// publish message 'Hello' to topic 'NODEMCU_PIPA'
+//publish message 'Hello' to topic 'NODEMCU_PIPA'
 setInterval(function(){
     client.publish('NODEMCU_PIPA', 'L');
-}, 10000);
+}, 1800000);
+
+// const pub = {
+//     publish(){
+//         client.publish('NODEMCU_PIPA', 'L');
+//         console.log("Aqui----------------------------");
+//     }
+// }
+
+// module.exports = pub;
