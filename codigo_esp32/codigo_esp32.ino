@@ -151,7 +151,10 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length)
     if(cisternaAlto == 1){
       cisternaBaixo = 1;
      }
-    if(caixadaguaAlto == 1){
+    if(100*(1-(cmMsec-altura_da_tampa)/altura_da_caixa) <= 10.00){
+      caixadaguaBaixo = 0;
+      }
+     else{
       caixadaguaBaixo = 1;
       }
     //100*cmMsec/altura_da_caixa
