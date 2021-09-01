@@ -26,7 +26,7 @@ export default function SecondPage() {
 		tableHead: ['Sensor Cisterna Topo', 'Sensor Cisterna Fundo', 'Sensor Caixa Topo', 'Sensor Caixa Fundo'],
 	  
 		tableData: [
-		  [results.sc1?"1":"0", results.sc2?"1":"0", results.scx1?"1":"0",results.scx1?"1":"0"]
+		  [results.sc1?"1":"0", results.sc2?"1":"0", results.scx1?"1":"0",results.scx2?"1":"0"]
 		],
 	  };
 

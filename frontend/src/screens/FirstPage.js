@@ -1,13 +1,14 @@
 import React from 'react';
-import {SafeAreaView, StyleSheet,TouchableOpacity, Text, View } from 'react-native';
+import {SafeAreaView, StyleSheet,TouchableOpacity, Text, View, ImageBackground } from 'react-native';
 import * as screen from "../constants/dimensions";
 
 export default function FirstPage({navigation}) {
   return (
     <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-            <Text>PIPA PROJECT!</Text>    
-        </View>
+          <ImageBackground style={styles.imgBack} 
+          source={require("../../assets/images/pipaLogo.png")}
+          resizeMode = 'contain'>
+          </ImageBackground>
     <TouchableOpacity style={styles.submitButton} onPress={() => console.log(navigation.navigate("SecondPage"))}> 
       <Text style={styles.submitButtonText}>ENTRAR</Text>
     </TouchableOpacity>
@@ -19,20 +20,27 @@ export default function FirstPage({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#e6f2ff"
   },
-  header: {
-    marginTop: screen.height * 0.4,
-    alignItems: "center",
-  },
+  
+  imgBack: {
+    width: screen.width,
+    height: screen.height * 0.6,
+    flex: 1 
+},
 
   submitButton:{
     width: screen.width *0.2,
     height: screen.height * 0.05,
-    backgroundColor: "#FF4500",
+    backgroundColor: "#6495ED",
     alignSelf: "center",
-    borderRadius: screen.width *0.02,
+    borderRadius: screen.width *0.1,
     alignItems: "center",
     justifyContent: "center",
+    position: 'absolute',
+    top: 400
+
+    
   },
 
   submitButtonText: {
