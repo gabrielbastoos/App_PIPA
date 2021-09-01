@@ -53,6 +53,7 @@ long microsec;
 float cmMsec;
 
 int altura_da_caixa = 70;
+int altura_da_tampa = 16;
 
 int ledInterno = 2;
 
@@ -140,13 +141,21 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length)
     microsec = ultrasonic.timing();
     cmMsec = ultrasonic.convert(microsec, Ultrasonic::CM);
     delay(100);
-    int sensorB2_leitura = digitalRead(sensorB2);
+    int cisternaBaixo = 0;
+    int cisternaAlto = !(digitalRead(sensorB2));
     delay(10);
-    int sensorB1_leitura = digitalRead(sensorB1);
+    int caixadaguaAlto = !(digitalRead(sensorB1));
     delay(10);
-    int sensorA1_leitura = digitalRead(sensorA1);
+    int caixadaguaBaixo = !(digitalRead(sensorA1));
+
+    if(cisternaAlto == 1){
+      cisternaBaixo = 1;
+     }
+    if(caixadaguaAlto == 1){
+      caixadaguaBaixo = 1;
+      }
     //100*cmMsec/altura_da_caixa
-    sprintf(teste, "{\"s1\":%d,\"s2\":%d,\"s3\":%d,\"s4\":%d,\"volume\":%f}", sensorA1_leitura, sensorB1_leitura, sensorB2_leitura, sensorB2_leitura,100*cmMsec/altura_da_caixa);
+    sprintf(teste, "{\"sc1\":%d,\"sc2\":%d,\"scx1\":%d,\"scx2\":%d,\"volume\":%.2f}", cisternaAlto, cisternaBaixo, caixadaguaAlto, caixadaguaBaixo,100*(1-(cmMsec-altura_da_tampa)/altura_da_caixa));
    
     MQTT.publish(TOPICO_PUBLISH, teste);
     //EstadoSaida = '1';

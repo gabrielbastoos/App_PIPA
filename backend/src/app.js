@@ -1,7 +1,7 @@
 const express = require('express');
 const sequelize = require('./database/databaseConnection');
-const subscriber = require('./mqtt/orchestratorSubscriber')
-const publisher = require('./mqtt/publisher')
+const subscriber = require('./mqtt/orchestratorSubscriber');
+const publisher = require('./mqtt/publisher');
 
 const router = express.Router();
 const index = require('./routes/index');

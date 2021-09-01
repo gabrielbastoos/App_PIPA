@@ -14,7 +14,7 @@ var client = mqtt.connect(options);
 
 //setup the callbacks
 client.on('connect', function () {
-    console.log('Connected');
+    console.log('Connected to the broker');
 });
 
 client.on('error', function (error) {
