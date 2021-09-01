@@ -1,10 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import {SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import axios from 'axios';
+import { View, StyleSheet, Text } from 'react-native';
+import { Table, TableWrapper, Row, Rows } from 'react-native-table-component';
 import * as screen from "../constants/dimensions";
-
+import axios from 'axios';
 
 export default function SecondPage() {
+  
 	const [results, setResults] = useState([])
 	
 	const getApiDados = async () => {
@@ -21,34 +22,69 @@ export default function SecondPage() {
 		getApiDados();
 	}, []);
 
-    return (
-    <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-            <Text>Status</Text>   
-        </View>
-		<View style={styles.body}>
-			<Text>{results.sc1?"Cheio":"Vazio"}</Text> 
-		    <Text>{results.volume}</Text>
-    
-        </View>
-    
-    </SafeAreaView>  
-    );
+	const CONTENT = {
+		tableHead: ['Sensor Cisterna Topo', 'Sensor Cisterna Fundo', 'Sensor Caixa Topo', 'Sensor Caixa Fundo'],
+	  
+		tableData: [
+		  [results.sc1?"1":"0", results.sc2?"1":"0", results.scx1?"1":"0",results.scx1?"1":"0"]
+		],
+	  };
+
+	const Volume = {
+		tableHead: ['Volume'],
+		tableData: [
+		  [results.volume + ' %']
+		],
+	  };
+	
+	return (
+    <View style={styles.container}>
+      <Table borderStyle={{ borderWidth: 1 }}>
+        <Row
+          data={CONTENT.tableHead}
+          flexArr={[1, 1, 1, 1]}
+          style={styles.head}
+          textStyle={styles.text}
+        />
+        <TableWrapper style={styles.wrapper}>
+          <Rows
+            data={CONTENT.tableData}
+            flexArr={[1, 1, 1]}
+            style={styles.row}
+            textStyle={styles.text}
+          />
+        </TableWrapper>
+      </Table>
+		<Text>{"\n\n\n"}</Text>
+      <Table borderStyle={{ borderWidth: 1 }}>
+        <Row
+          data={Volume.tableHead}
+          flexArr={[1]}
+          style={styles.headVolume}
+          textStyle={styles.text}
+        />
+        <TableWrapper style={styles.wrapperVolume}>
+          <Rows
+            data={Volume.tableData}
+            flexArr={[1]}
+            style={styles.rowVolume}
+            textStyle={styles.textVolume}
+          />
+        </TableWrapper>
+      </Table>
+
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    marginTop: screen.height * 0.1,
-    alignItems: "center",
-  },
-
-  body: {
-    alignItems: "center",
-	marginTop: screen.height * 0.2,
-  },
-
-
+  container: { flex: 1, padding: 15, paddingTop: 100, backgroundColor: '#fff' },
+  head: { height: 65, backgroundColor: '#6495ED', width: screen.width * 0.92 , },
+  headVolume: { height: 45, backgroundColor: '#00FFFF' },
+  wrapper: { flexDirection: 'row' },
+  wrapperVolume: { flexDirection: 'row' },
+  row: { height: 28, width: screen.width * 0.92 },
+  rowVolume: { height: 28 },
+  text: { textAlign: 'center' },
+  textVolume: { textAlign: 'center' }
 });
