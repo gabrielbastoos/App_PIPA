@@ -5,45 +5,8 @@
 #include <ArduinoOTA.h>
 #include <Ultrasonic.h>
 #include <PubSubClient.h>
-
-#define TOPICO_SUBSCRIBE "NODEMCU_PIPA"    //tópico MQTT de escuta
-#define TOPICO_PUBLISH  "NODEJS_PIPA"   //tópico MQTT de envio de informações para Broker
-//IMPORTANTE: recomendamos fortemente alterar os nomes
-//            desses tópicos. Caso contrário, há grandes
-//            chances de você controlar e monitorar o NodeMCU
-//            de outra pessoa.
-#define ID_MQTT  "NODEMCU"     //id mqtt (para identificação de sessão)
-//IMPORTANTE: este deve ser único no broker (ou seja,
-//            se um client MQTT tentar entrar com o mesmo
-//            id de outro já conectado ao broker, o broker
-//            irá fechar a conexão de um deles).
-
-const char* test_root_ca= \
-     "-----BEGIN CERTIFICATE-----\n" \
-     "MIIDSjCCAjKgAwIBAgIQRK+wgNajJ7qJMDmGLvhAazANBgkqhkiG9w0BAQUFADA/\n" \
-     "MSQwIgYDVQQKExtEaWdpdGFsIFNpZ25hdHVyZSBUcnVzdCBDby4xFzAVBgNVBAMT\n" \
-     "DkRTVCBSb290IENBIFgzMB4XDTAwMDkzMDIxMTIxOVoXDTIxMDkzMDE0MDExNVow\n" \
-     "PzEkMCIGA1UEChMbRGlnaXRhbCBTaWduYXR1cmUgVHJ1c3QgQ28uMRcwFQYDVQQD\n" \
-     "Ew5EU1QgUm9vdCBDQSBYMzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB\n" \
-     "AN+v6ZdQCINXtMxiZfaQguzH0yxrMMpb7NnDfcdAwRgUi+DoM3ZJKuM/IUmTrE4O\n" \
-     "rz5Iy2Xu/NMhD2XSKtkyj4zl93ewEnu1lcCJo6m67XMuegwGMoOifooUMM0RoOEq\n" \
-     "OLl5CjH9UL2AZd+3UWODyOKIYepLYYHsUmu5ouJLGiifSKOeDNoJjj4XLh7dIN9b\n" \
-     "xiqKqy69cK3FCxolkHRyxXtqqzTWMIn/5WgTe1QLyNau7Fqckh49ZLOMxt+/yUFw\n" \
-     "7BZy1SbsOFU5Q9D8/RhcQPGX69Wam40dutolucbY38EVAjqr2m7xPi71XAicPNaD\n" \
-     "aeQQmxkqtilX4+U9m5/wAl0CAwEAAaNCMEAwDwYDVR0TAQH/BAUwAwEB/zAOBgNV\n" \
-     "HQ8BAf8EBAMCAQYwHQYDVR0OBBYEFMSnsaR7LHH62+FLkHX/xBVghYkQMA0GCSqG\n" \
-     "SIb3DQEBBQUAA4IBAQCjGiybFwBcqR7uKGY3Or+Dxz9LwwmglSBd49lZRNI+DT69\n" \
-     "ikugdB/OEIKcdBodfpga3csTS7MgROSR6cz8faXbauX+5v3gTt23ADq1cEmv8uXr\n" \
-     "AvHRAosZy5Q6XkjEGB5YGV8eAlrwDPGxrancWYaLbumR9YbK+rlmM6pZW87ipxZz\n" \
-     "R8srzJmwN0jP41ZL9c8PDHIyh8bwRLtTcm1D9SZImlJnt1ir/md2cXjbDaJWFBM5\n" \
-     "JDGFoqgCWjBH4d1QB7wCCZAA62RjYJsWvIjJEubSfZGL+T0yjWW06XyxV3bqxbYo\n" \
-     "Ob8VZRzI9neWagqNdwvYkQsEjgfbKbYK7p2CNTUQ\n" \
-     "-----END CERTIFICATE-----\n";
-
-     
-const char* BROKER_MQTT = "d0b5f4bcb08a43189a9bd4e2bef485db.s1.eu.hivemq.cloud";
-
-int BROKER_PORT = 8883; // Porta do Broker MQTT
+#include "constants_h.h"
+   
 
 WiFiClientSecure espClient;
 PubSubClient MQTT(espClient); // Instancia o Cliente MQTT passando o objeto espClient
@@ -51,22 +14,6 @@ PubSubClient MQTT(espClient); // Instancia o Cliente MQTT passando o objeto espC
 
 long microsec;
 float cmMsec;
-
-int altura_da_caixa = 70;
-int altura_da_tampa = 16;
-
-int ledInterno = 2;
-
-const char* ssid = "Wifi";
-const char* password = "w1f1gabriel";
-
-int TRIGGER_PIN = 26;
-int ECHO_PIN    = 27;
-
-int sensorA1 = 35;
-int sensorB1 = 32;
-int sensorB2 = 33;
-
 
 Ultrasonic ultrasonic(TRIGGER_PIN, ECHO_PIN);
 
@@ -106,7 +53,7 @@ void reconnectMQTT()
   {
     Serial.print("* Tentando se conectar ao Broker MQTT: ");
     Serial.println(BROKER_MQTT);
-    if (MQTT.connect(ID_MQTT,"pipauser","P1p4_mqtt"))
+    if (MQTT.connect(ID_MQTT,brokerUser,brokerPassword))
     {
       Serial.println("Conectado com sucesso ao broker MQTT!");
       MQTT.subscribe(TOPICO_SUBSCRIBE);
@@ -134,13 +81,21 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length)
   //verifica se deve colocar nivel alto de tensão na saída LED_INTERNO:
   //IMPORTANTE: o Led já contido na placa é acionado com lógica invertida (ou seja,
   //enviar HIGH para o output faz o Led apagar / enviar LOW faz o Led acender)
-  if (msg.equals("L"))
+  if (msg.equals(uuid))
   {
     digitalWrite(ledInterno, LOW);
-    char teste[60];
-    microsec = ultrasonic.timing();
-    cmMsec = ultrasonic.convert(microsec, Ultrasonic::CM);
+    char teste[120];
+    // for (int i = 0; i < qtdMedicoes; i++)
+    // {
+      microsec = ultrasonic.timing();
+    //  microsec += ultrasonic.timing();
+    //   delay(100);
+    // }
+
+    //microsec=microsec/qtdMedicoes;
     delay(100);
+    cmMsec = ultrasonic.convert(microsec, Ultrasonic::CM);
+    
     int cisternaBaixo = 0;
     int cisternaAlto = !(digitalRead(sensorB2));
     delay(10);
@@ -158,20 +113,26 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length)
       caixadaguaBaixo = 1;
       }
     //100*cmMsec/altura_da_caixa
-    sprintf(teste, "{\"sc1\":%d,\"sc2\":%d,\"scx1\":%d,\"scx2\":%d,\"volume\":%.2f}", cisternaAlto, cisternaBaixo, caixadaguaAlto, caixadaguaBaixo,100*(1-(cmMsec-altura_da_tampa)/altura_da_caixa));
+    sprintf(teste, "{\"client\":\"%s\",\"wifi_db\":%d,\"sensors\":{\"sc1\":%d,\"sc2\":%d,\"scx1\":%d,\"scx2\":%d,\"volume\":%.2f}}", uuid, WiFi.RSSI(),cisternaAlto, cisternaBaixo, caixadaguaAlto, caixadaguaBaixo,100*(1-(cmMsec-altura_da_tampa)/altura_da_caixa));
    
     MQTT.publish(TOPICO_PUBLISH, teste);
     //EstadoSaida = '1';
     //msg = "";
   }
-
-  //verifica se deve colocar nivel alto de tensão na saída LED_INTERNO:
-  else if (msg.equals("D"))
+  else if(msg.equals(uuid_status)){
+    long wifi = WiFi.RSSI();
+    char jsonAlive[60];
+    sprintf(jsonAlive,"{\"client\":\"%s\",\"wifi_db\":%d,\"status\":\"online\"}", uuid, WiFi.RSSI());
+    MQTT.publish(TOPICO_PUBLISH, jsonAlive);
+  }
+  else
   {
     digitalWrite(ledInterno, HIGH);
+    MQTT.publish(TOPICO_PUBLISH, "Parâmetro recebido incorreto");
     //EstadoSaida = '0';
     //msg = "";
   }
+
 
 }
 
