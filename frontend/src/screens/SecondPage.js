@@ -8,14 +8,18 @@ import axios from 'axios';
 export default function SecondPage() {
 
 	const [results, setResults] = useState([])
+  const [percentageVariable, setPercentageVariable] = useState(0)
 	
-	const getApiDados = async () => {
+  async function getApiDados(){
 		try {
-			const url = "http://app-pipa.herokuapp.com/status"
+			//const url = "http://app-pipa.herokuapp.com/status"
+      const url = "https://pipaa.free.beeceptor.com"
 			const response = await axios.get(url)
-			setResults(response.data.data);
+      console.log(response.data.sensors);
+			setResults(response.data.sensors);
+      setPercentageVariable(results.volume/100);
 		} catch (e) {
-		alert("errrrrrrrro!!!!!")
+		alert("Erro ao obter os dados")
 		}
 	};
 
@@ -23,9 +27,13 @@ export default function SecondPage() {
 		getApiDados();
 	}, []);
 
+
+
   const data = {
     label: [''],
-    data: [0.5] //ao colocar valor de results.volume recebo erro 
+    porcentagem: [percentageVariable],
+    percentText:percentageVariable*100,
+    
   };
 
   //tableHead: ['Sensor Cisterna Topo', 'Sensor Cisterna Fundo', 'Sensor Caixa Topo', 'Sensor Caixa Fundo'],
@@ -43,17 +51,26 @@ export default function SecondPage() {
     <SafeAreaView style={styles.container}>      
       <View>
         <Text style={styles.headerText}>Monitoramento atual</Text>
+        <View style={styles.linhaCampos}></View>
         <Text style={styles.subtittleText}>Volume atual</Text>        
-        <Text style={styles.percentNumber}>{data.data}%</Text>
+        <Text style={styles.percentNumber}>{data.percentText}%</Text>
           <ProgressChart
-            data={data}
+            data={data.porcentagem}
+            style={{marginLeft:screen.width*0.04}}
             width={screen.width * 0.4}
-            height={screen.height * 0.18}
+            height={screen.height * 0.2}
             strokeWidth={16}
             radius={55}
             chartConfig={chartConfig}
             hideLegend={true}
           />     
+          <Text style={styles.graficoText}>Gráfico de volume</Text>   
+          <View style={styles.linhaCampos}></View> 
+          <View style={styles.linhaCampoEscura}></View> 
+
+          <Text style={styles.nivelText}>Nível Atual</Text>   
+          <View style={styles.linhaCampos}></View> 
+          <View style={styles.linhaCampoNivel}></View> 
       </View>
 </SafeAreaView>  
   );
@@ -66,27 +83,68 @@ const styles = StyleSheet.create ({
   },
 
   headerText: {
-    marginTop: screen.height * 0.11,
-    marginLeft: screen.width * 0.05,
+    marginTop: screen.height * 0.1,
+    marginLeft:screen.width*0.08,
     alignItems: "flex-end",
-    fontSize: screen.height * 0.035,
-    borderBottomWidth: 0.5,    
-    borderBottomColor: '#888888' ,
-    fontFamily: 'serif',
-    top: 0
+    fontSize: 26,
+
+    //fontFamily: 'serif',
   },
-  
+  linhaCampos: {
+    borderBottomColor: "#e8e4e3",
+    marginLeft:screen.width*0.08,
+    marginRight:screen.width*0.1,
+    marginTop:screen.height*0.02,
+    borderBottomWidth: 2,
+
+  },
+  linhaCampoEscura: {
+    borderBottomColor: "black",
+    width:screen.width*0.36,
+    marginLeft:screen.width*0.54,
+    marginRight:screen.width*0.1,
+    marginTop:-screen.height*0.001,
+    //marginTop:screen.width*0.02,
+    borderBottomWidth: 2,
+
+  },
   subtittleText: {
     marginTop: screen.height * 0.03,
-    marginLeft: screen.width * 0.06,
+    marginLeft:screen.width*0.08,
     alignItems: "flex-end",
-    color: '#707070',
-    fontSize: screen.height * 0.020,
-    fontFamily: 'sans-serif-light'
+    color: '#abb5be',
+    fontSize: 16,
+    //fontFamily: 'sans-serif-light'
+  },
+  graficoText:{
+    marginTop: screen.height * 0.01,
+    marginLeft:screen.width*0.54,
+    marginRight:screen.width*0.06,
+    fontSize:16,
+    fontWeight:"bold",
+  },
+
+  nivelText:{
+    marginTop: screen.height * 0.01,
+    marginLeft:screen.width*0.68,
+    marginRight:screen.width*0.06,
+    fontSize:16,
+    fontWeight:"bold",
+  },
+
+  linhaCampoNivel: {
+    borderBottomColor: "black",
+    width:screen.width*0.22,
+    marginLeft:screen.width*0.68,
+    marginRight:screen.width*0.1,
+    marginTop:-screen.height*0.001,
+    //marginTop:screen.width*0.02,
+    borderBottomWidth: 2,
+
   },
   percentNumber: {
-    top:87,
-    left:60,
+    marginLeft:screen.width*0.18,
+    top:screen.height*0.12,
     fontSize:20,
     color:"green"
   }
@@ -97,11 +155,9 @@ const chartConfig = {
   backgroundGradientFromOpacity: 0,
   backgroundGradientTo: "black",
   backgroundGradientToOpacity: 0,
-  color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+  color: (opacity = 1) => `rgba(127, 225, 173, ${opacity})`,
   strokeWidth: 2, // optional, default 3
   barPercentage: 0.5,
   useShadowColorFromDataset: false, // optional
-  
-  
   
 };
