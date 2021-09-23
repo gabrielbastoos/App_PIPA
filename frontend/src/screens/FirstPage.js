@@ -1,22 +1,29 @@
 import React, {useState} from 'react';
-import {SafeAreaView, StyleSheet,TouchableOpacity, Text, TextInput, Image, View } from 'react-native';
+import {SafeAreaView, StyleSheet,TouchableOpacity, Text, TextInput, Image, View, KeyboardAvoidingView } from 'react-native';
 import * as screen from "../constants/dimensions";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function FirstPage({navigation}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const icon = !visible ? 'eye-slash' : 'eye';
+  //const [value, onChangeText] = React.useState(props.value);
+  const [visible, setVisibility] = React.useState(false);
  
   
   return (
     <SafeAreaView style={styles.container}>           
-      
+      <KeyboardAvoidingView behavior={'position'}>
       <View style={styles.header}>
         <Image source={require("../../assets/images/pipaLogo.png")}
           style={styles.titleImage}
           resizeMode={"contain"}
         />
       </View>
+      <Text style={styles.acesseText}>Acesse</Text>
+
+      <Text style={styles.acesseInfoText}>Para acessar os seus dispositivos, faça o login</Text>
 
       <Text style={styles.loginText}>E-mail</Text>
       <TextInput 
@@ -27,21 +34,38 @@ export default function FirstPage({navigation}) {
       value={email}
       onChangeText={(email) => setEmail(email)}
       />
-
+      <View style={styles.linhaCampos}></View>
       <Text style={styles.passwordText}>Senha</Text>
       <TextInput 
       style={styles.passwordInput} 
-      placeholder={"*******"}
+      placeholder={"•••••••••••"}
       secureTextEntry={true}
       autoCapitalize={"none"}
       autoCorrect={false}
+      secureTextEntry={!visible}
       value={password}
       onChangeText={(password) => setPassword(password)}
       />     
+      <View style={styles.linhaCampos}></View>
+      <Icon
+          name={icon}
+          color={'#9e9e9e'}
+          onPress={() => setVisibility(!visible)}
+          style={styles.icons}
+        />
       <TouchableOpacity style={styles.submitButton} onPress={() => console.log(navigation.navigate("SecondPage"))}> 
         <Text style={styles.submitButtonText}>Acessar</Text>
       </TouchableOpacity>
-    
+      </KeyboardAvoidingView>
+
+        <Text 
+        onPress={() => console.log(navigation.navigate("Cadastro"))}
+        style={styles.cadastreText}
+        >Cadastre-se</Text>
+      <Text 
+      style={styles.esqueceuText}
+      onPress={() => console.log("pagina não desenvolvida")}
+      >Esqueceu a senha?</Text>
     </SafeAreaView>  
     );
 }
@@ -50,6 +74,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white"
+  },
+  acesseText:{
+    //marginTop:screen.height*0.08,
+    marginLeft:screen.width*0.08,
+    //fontFamily:"Quicksand",
+    fontWeight:"bold",
+    fontSize:26,
+    color:"#35424a"
+  },
+  acesseInfoText:{
+    marginTop:screen.height*0.02,
+    marginLeft:screen.width*0.08,
+    marginBottom:screen.width*0.02,
+    //fontFamily:"Quicksand",
+    fontSize:16,
+    color:"#989eb1"
   },
 
   header: {
@@ -65,63 +105,91 @@ const styles = StyleSheet.create({
   }, 
   
   loginText: {
-    top:100,
-    right: -20,
-    fontSize: 20,
-    color: "red"
+    marginLeft:screen.width*0.08,
+    marginTop:screen.height*0.02,
+    fontSize: 14,
+    color: "#f85f6a"
   },
+  linhaCampos: {
+    borderBottomColor: "#e8e4e3",
+    marginLeft:screen.width*0.08,
+    marginRight:screen.width*0.2,
+    marginTop:screen.width*0.02,
+    borderBottomWidth: 2,
 
+  },
   usernameInput: {
-    borderWidth: 1,
-    width: screen.width * 0.9,
-    height: screen.height*0.05,
-    alignSelf: "center",
-    marginVertical: screen.height* 0.02,
-    backgroundColor: "#F5F5F5",
-    borderRadius: screen.width *0.02,
-    color: "#333",
-    fontSize: screen.height * 0.025,
-    paddingHorizontal: screen.width *0.03,
-    top: 90
+    marginTop:screen.height*0.01,
+    marginLeft:screen.width*0.08,
+    marginRight:screen.width*0.2,
+    paddingHorizontal: 1,
+   // fontFamily:"Arial",
+    fontWeight:"bold",
+    fontSize:16,
+    borderRadius:10,
+    color:"#35424a",
   },  
   
   passwordText: {
-    right: -20,
-    fontSize: 20,
-    color: "red",
-    top:120
+    marginLeft:screen.width*0.08,
+    marginTop:screen.height*0.02,
+    fontSize: 14,
+    color: "#f85f6a"
   },
-
+  cadastreText: {
+    marginLeft:screen.width*0.65,
+    marginTop:screen.height*0.07,
+    fontSize: 16,
+    fontWeight:"bold",
+    color: "#f85f6a"
+  },
+  esqueceuText:{
+    marginTop:-screen.height*0.03,
+    marginLeft:screen.width*0.08,
+    width:screen.width*0.38,
+    //marginBottom:screen.width*0.02,
+    //fontFamily:"Quicksand",
+    fontSize:16,
+    color:"#989eb1"
+  },
   passwordInput: {
-    borderWidth: 1,
-    width: screen.width * 0.9,
-    height: screen.height*0.05,
-    alignSelf: "center",
-    marginVertical: screen.height* 0.02,
-    backgroundColor: "#F5F5F5",
-    borderRadius: screen.width *0.02,
-    color: "#333",
-    fontSize: screen.height * 0.025,
-    paddingHorizontal: screen.width *0.03,
-    top:110
+    marginTop:screen.height*0.01,
+    marginLeft:screen.width*0.08,
+    marginRight:screen.width*0.2,
+    paddingHorizontal: 1,
+   // fontFamily:"Arial",
+    fontWeight:"bold",
+    fontSize:16,
+    borderRadius:10,
+    color:"#35424a",
   },  
 
 submitButtonText: {
   color: "#FFFFFF",
   fontWeight: "bold",
-  fontSize: screen.width *0.04,
+  fontSize: 17,
 },
+  icons: {
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    height: screen.height*0.06,
+    width: screen.height*0.05,
+    marginLeft:screen.width*0.72,
+    marginTop:-screen.width*0.1
+  },
 
 submitButton:{
+  marginTop:screen.height*0.05,
+  //marginBottom:screen.height,
   width: screen.width *0.7,
   height: screen.height * 0.07,
-  backgroundColor: "#6495ED",
+  backgroundColor: "#0c59cf",
   alignSelf: "center",
   borderRadius: screen.width *0.03,
   alignItems: "center",
   justifyContent: "center",
-  position: 'absolute',
-  top: 600
+  //position: 'absolute',
+  //top: 600
 },
 
 

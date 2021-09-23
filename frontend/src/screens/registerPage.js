@@ -111,7 +111,7 @@ export default function RegisterPage({navigation}) {
           value={senha}
           onChangeText={(password) => setSenha(password)}
           autoCapitalize={'none'}
-          placeholder={"Senha"}
+          placeholder={"•••••••••••"}
           secureTextEntry={!visible}
         />
         <View
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
   cadastreText:{
     marginTop:screen.height*0.08,
     marginLeft:screen.width*0.08,
-    fontFamily:"Quicksand",
+    //fontFamily:"Quicksand",
     fontWeight:"bold",
     fontSize:26,
     color:"#35424a"
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 1,
    // fontFamily:"Arial",
     fontWeight:"bold",
-    fontSize:12,
+    fontSize:16,
     borderRadius:10,
     color:"#35424a",
   },

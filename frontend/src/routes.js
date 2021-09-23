@@ -12,8 +12,8 @@ export default function(){
     return(
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="Cadastro" component={RegisterPage}/>
                 <Stack.Screen name="Home" component={FirstPage}/>
+                <Stack.Screen name="Cadastro" component={RegisterPage}/>
                 <Stack.Screen name="SecondPage" component={SecondPage}/>
             </Stack.Navigator>
         </NavigationContainer>
