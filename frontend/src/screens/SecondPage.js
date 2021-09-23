@@ -1,11 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import { Table, TableWrapper, Row, Rows } from 'react-native-table-component';
+import { View, StyleSheet, Text, SafeAreaView } from 'react-native';
+import { ProgressChart } from "react-native-chart-kit";
 import * as screen from "../constants/dimensions";
 import axios from 'axios';
 
+
 export default function SecondPage() {
-  
+
 	const [results, setResults] = useState([])
 	
 	const getApiDados = async () => {
@@ -14,7 +15,7 @@ export default function SecondPage() {
 			const response = await axios.get(url)
 			setResults(response.data.data);
 		} catch (e) {
-		alert("erro")
+		alert("errrrrrrrro!!!!!")
 		}
 	};
 
@@ -22,69 +23,85 @@ export default function SecondPage() {
 		getApiDados();
 	}, []);
 
-	const CONTENT = {
-		tableHead: ['Sensor Cisterna Topo', 'Sensor Cisterna Fundo', 'Sensor Caixa Topo', 'Sensor Caixa Fundo'],
-	  
-		tableData: [
-		  [results.sc1?"1":"0", results.sc2?"1":"0", results.scx1?"1":"0",results.scx2?"1":"0"]
-		],
-	  };
+  const data = {
+    label: [''],
+    data: [0.5] //ao colocar valor de results.volume recebo erro 
+  };
 
-	const Volume = {
-		tableHead: ['Volume'],
-		tableData: [
-		  [results.volume + ' %']
-		],
-	  };
+  //tableHead: ['Sensor Cisterna Topo', 'Sensor Cisterna Fundo', 'Sensor Caixa Topo', 'Sensor Caixa Fundo'],
+	//
+	//tableData: [
+	//  [results.sc1?"1":"0", results.sc2?"1":"0", results.scx1?"1":"0",results.scx2?"1":"0"]
+
+	//const Volume = {
+	//tableHead: ['Volume'],
+	//tableData: [
+	//  [results.volume + ' %']
+
 	
 	return (
-    <View style={styles.container}>
-      <Table borderStyle={{ borderWidth: 1 }}>
-        <Row
-          data={CONTENT.tableHead}
-          flexArr={[1, 1, 1, 1]}
-          style={styles.head}
-          textStyle={styles.text}
-        />
-        <TableWrapper style={styles.wrapper}>
-          <Rows
-            data={CONTENT.tableData}
-            flexArr={[1, 1, 1]}
-            style={styles.row}
-            textStyle={styles.text}
-          />
-        </TableWrapper>
-      </Table>
-		<Text>{"\n\n\n"}</Text>
-      <Table borderStyle={{ borderWidth: 1 }}>
-        <Row
-          data={Volume.tableHead}
-          flexArr={[1]}
-          style={styles.headVolume}
-          textStyle={styles.text}
-        />
-        <TableWrapper style={styles.wrapperVolume}>
-          <Rows
-            data={Volume.tableData}
-            flexArr={[1]}
-            style={styles.rowVolume}
-            textStyle={styles.textVolume}
-          />
-        </TableWrapper>
-      </Table>
-
-    </View>
+    <SafeAreaView style={styles.container}>      
+      <View>
+        <Text style={styles.headerText}>Monitoramento atual</Text>
+        <Text style={styles.subtittleText}>Volume atual</Text>        
+        <Text style={styles.percentNumber}>{data.data}%</Text>
+          <ProgressChart
+            data={data}
+            width={screen.width * 0.4}
+            height={screen.height * 0.18}
+            strokeWidth={16}
+            radius={55}
+            chartConfig={chartConfig}
+            hideLegend={true}
+          />     
+      </View>
+</SafeAreaView>  
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 15, paddingTop: 100, backgroundColor: '#fff' },
-  head: { height: 65, backgroundColor: '#6495ED', width: screen.width * 0.92 , },
-  headVolume: { height: 45, backgroundColor: '#00FFFF' },
-  wrapper: { flexDirection: 'row' },
-  wrapperVolume: { flexDirection: 'row' },
-  row: { height: 28, width: screen.width * 0.92 },
-  rowVolume: { height: 28 },
-  text: { textAlign: 'center' },
-  textVolume: { textAlign: 'center' }
-});
+const styles = StyleSheet.create ({
+  container: {
+    flex: 1,
+    backgroundColor: "white"
+  },
+
+  headerText: {
+    marginTop: screen.height * 0.11,
+    marginLeft: screen.width * 0.05,
+    alignItems: "flex-end",
+    fontSize: screen.height * 0.035,
+    borderBottomWidth: 0.5,    
+    borderBottomColor: '#888888' ,
+    fontFamily: 'serif',
+    top: 0
+  },
+  
+  subtittleText: {
+    marginTop: screen.height * 0.03,
+    marginLeft: screen.width * 0.06,
+    alignItems: "flex-end",
+    color: '#707070',
+    fontSize: screen.height * 0.020,
+    fontFamily: 'sans-serif-light'
+  },
+  percentNumber: {
+    top:87,
+    left:60,
+    fontSize:20,
+    color:"green"
+  }
+
+})
+const chartConfig = {
+  backgroundGradientFrom: "black",
+  backgroundGradientFromOpacity: 0,
+  backgroundGradientTo: "black",
+  backgroundGradientToOpacity: 0,
+  color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+  strokeWidth: 2, // optional, default 3
+  barPercentage: 0.5,
+  useShadowColorFromDataset: false, // optional
+  
+  
+  
+};
