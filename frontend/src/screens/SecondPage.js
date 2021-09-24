@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { View, StyleSheet, Text, SafeAreaView } from 'react-native';
+import { View, StyleSheet, Text, SafeAreaView,ActivityIndicator, TouchableOpacity } from 'react-native';
 import { ProgressChart } from "react-native-chart-kit";
 import * as screen from "../constants/dimensions";
 import axios from 'axios';
@@ -8,7 +8,12 @@ import axios from 'axios';
 export default function SecondPage() {
 
 	const [results, setResults] = useState([])
-  const [percentageVariable, setPercentageVariable] = useState(0)
+  const [data, setData] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [statusBomba, setStatusBomba] = useState(false)
+  const [textoBotao, setTextoBotao] = useState("Ligar a bomba")
+  const [colorBotao,setColorBotao] = useState("green")
+
 	
   async function getApiDados(){
 		try {
@@ -17,24 +22,59 @@ export default function SecondPage() {
 			const response = await axios.get(url)
       console.log(response.data.sensors);
 			setResults(response.data.sensors);
-      setPercentageVariable(results.volume/100);
+      var data = {
+        label:[''],
+        porcentagem: [results.volume/100],
+        percentText:results.volume,
+        
+      };
+      setData(data)
 		} catch (e) {
 		alert("Erro ao obter os dados")
 		}
 	};
 
+  async function switchBombaStatus(){
+		try {
+			//const url = "http://app-pipa.herokuapp.com/status"
+      var url = "";
+      if(statusBomba == false){
+        setStatusBomba(true)
+        setTextoBotao("Desligar a bomba")
+        setColorBotao("red")
+        url = "https://maker.ifttt.com/trigger/pipa_on/with/key/fLhyBLORuQKdzCXgvp4N2VQARUa4BpzLwH9VpKWC4Td"
+      }
+      else{
+        setStatusBomba(false)
+        setTextoBotao("Ligar a bomba")
+        setColorBotao("green")
+        url = "https://maker.ifttt.com/trigger/pipa_off/with/key/fLhyBLORuQKdzCXgvp4N2VQARUa4BpzLwH9VpKWC4Td"
+      }
+
+			const response = await axios.post(url)
+      console.log(response);
+			//setResults(response.data.sensors);
+      setData(data)
+		} catch (e) {
+		alert("Erro ao obter os dados")
+		}
+	};
+
+
 	useEffect (() => {
-		getApiDados();
+		//getApiDados();
+    var data = {
+      label:[''],
+      porcentagem: [0.5],
+      percentText:50,
+      
+    };
+    setData(data)
+    setLoading(false)
+    console.log(data)
 	}, []);
 
 
-
-  const data = {
-    label: [''],
-    porcentagem: [percentageVariable],
-    percentText:percentageVariable*100,
-    
-  };
 
   //tableHead: ['Sensor Cisterna Topo', 'Sensor Cisterna Fundo', 'Sensor Caixa Topo', 'Sensor Caixa Fundo'],
 	//
@@ -46,37 +86,58 @@ export default function SecondPage() {
 	//tableData: [
 	//  [results.volume + ' %']
 
-	
-	return (
-    <SafeAreaView style={styles.container}>      
-      <View>
-        <Text style={styles.headerText}>Monitoramento atual</Text>
-        <View style={styles.linhaCampos}></View>
-        <Text style={styles.subtittleText}>Volume atual</Text>        
-        <Text style={styles.percentNumber}>{data.percentText}%</Text>
-          <ProgressChart
-            data={data.porcentagem}
-            style={{marginLeft:screen.width*0.04}}
-            width={screen.width * 0.4}
-            height={screen.height * 0.2}
-            strokeWidth={16}
-            radius={55}
-            chartConfig={chartConfig}
-            hideLegend={true}
-          />     
-          <Text style={styles.graficoText}>Gráfico de volume</Text>   
-          <View style={styles.linhaCampos}></View> 
-          <View style={styles.linhaCampoEscura}></View> 
+	if(loading == false){
+    return (
+      <SafeAreaView style={styles.container}>      
+        <View>
+          <Text style={styles.headerText}>Monitoramento atual</Text>
+          <View style={styles.linhaCampos}></View>
+          <Text style={styles.subtittleText}>Volume atual</Text>        
+          <Text style={styles.percentNumber}>{data.percentText}%</Text>
+            <ProgressChart
+              data={data.porcentagem}
+              style={{marginLeft:screen.width*0.04}}
+              width={screen.width * 0.4}
+              height={screen.height * 0.2}
+              strokeWidth={16}
+              radius={55}
+              chartConfig={chartConfig}
+              hideLegend={true}
+            />     
+            <TouchableOpacity style={{
+                  marginTop:-screen.height*0.15,
+                  marginBottom:screen.height*0.1,
+                  marginLeft:screen.width*0.55,
+                  width: screen.width *0.35,
+                  height: screen.height * 0.05,
+                  backgroundColor: colorBotao,
+                  borderRadius:20,
+            }}
+            onPress={() => switchBombaStatus()}>
+              <Text style={styles.textoBotaoBomba}>{textoBotao}</Text>
+            </TouchableOpacity>
 
-          <Text style={styles.nivelText}>Nível Atual</Text>   
-          <View style={styles.linhaCampos}></View> 
-          <View style={styles.linhaCampoNivel}></View> 
-      </View>
-</SafeAreaView>  
-  );
+            <Text style={styles.graficoText}>Gráfico de volume</Text>   
+            <View style={styles.linhaCampos}></View> 
+            <View style={styles.linhaCampoEscura}></View> 
+  
+            <Text style={styles.nivelText}>Nível Atual</Text>   
+            <View style={styles.linhaCampos}></View> 
+            <View style={styles.linhaCampoNivel}></View> 
+        </View>
+  </SafeAreaView>  
+    );
+  }
+  else{
+    return(
+      <View style={styles.container}>
+        <ActivityIndicator/>
+      </View>)
+  }
+	
 }
 
-const styles = StyleSheet.create ({
+const styles  = StyleSheet.create ({
   container: {
     flex: 1,
     backgroundColor: "white"
@@ -96,6 +157,14 @@ const styles = StyleSheet.create ({
     marginRight:screen.width*0.1,
     marginTop:screen.height*0.02,
     borderBottomWidth: 2,
+
+  },
+
+  textoBotaoBomba:{
+    marginVertical:screen.height*0.01,
+    color:"white",
+    fontSize:14,
+    alignSelf:'center'
 
   },
   linhaCampoEscura: {
@@ -143,7 +212,7 @@ const styles = StyleSheet.create ({
 
   },
   percentNumber: {
-    marginLeft:screen.width*0.18,
+    marginLeft:screen.width*0.2,
     top:screen.height*0.12,
     fontSize:20,
     color:"green"
