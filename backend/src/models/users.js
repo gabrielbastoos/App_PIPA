@@ -12,7 +12,10 @@ Users.init({
     },
     name: DataTypes.STRING,
     userName: DataTypes.STRING,
-    email: DataTypes.STRING,
+    email: {
+        type: DataTypes.STRING,
+        unique: true
+    },
     password: DataTypes.STRING,
     uuid: {
         type: DataTypes.STRING,

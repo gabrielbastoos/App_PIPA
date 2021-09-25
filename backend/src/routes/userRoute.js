@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const UserRepo = require('../repo/userRepo')
 
+router.get('/login', async (req, res) => {
+    let resp = await UserRepo.findUser(req.body);
+    res.sendStatus(resp.data);
+});
+
 router.post('/createUser', async (req, res) => {
     let resp = await UserRepo.create(req.body);
     if (resp.hasError){
