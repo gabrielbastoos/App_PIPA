@@ -2,30 +2,31 @@ const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../database/databaseConnection');
 const Devices = require('./devices');
 
-class Sensors extends Model {}
-Sensors.init({
+class Users extends Model {}
+Users.init({
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         allowNull: false,
         primaryKey: true,  
     },
-    sc1: DataTypes.BOOLEAN,
-    sc2: DataTypes.BOOLEAN,
-    scx1: DataTypes.BOOLEAN,
-    scx2: DataTypes.BOOLEAN,
-    volume: DataTypes.FLOAT,
-    uuid_device: {
+    name: DataTypes.STRING,
+    userName: DataTypes.STRING,
+    email: DataTypes.STRING,
+    password: DataTypes.STRING,
+    uuid: {
         type: DataTypes.STRING,
         references: {
             model: Devices,
             key: 'uuid'
         }
-    }
+    },
+    admin: DataTypes.BOOLEAN,
+    createdBy: DataTypes.STRING,
 },
 {
     sequelize,
-    modelName: 'Sensors'
+    modelName: 'Users'
 });
 
-module.exports = Sensors;
+module.exports = Users;

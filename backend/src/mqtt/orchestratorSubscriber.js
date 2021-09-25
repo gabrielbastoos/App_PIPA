@@ -1,5 +1,6 @@
 const SensorRepo = require('../repo/sensorRepo');
 const connection = require('./connection');
+const DeviceRepo = require('../repo/deviceRepo');
 
 //initialize the MQTT client
 var client = connection;
@@ -11,5 +12,6 @@ client.on('message', function (topic, message) {
     //Called each time a message is received
     let obj = JSON.parse(message.toString());
     console.log('Received message:', topic, obj);
-    console.log(SensorRepo.create(obj));
+    console.log(DeviceRepo.update(obj));
+    SensorRepo.create(obj, obj.client);
 });

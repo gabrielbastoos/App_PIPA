@@ -20,9 +20,17 @@ class SensorRepo{
         return response;
     }
 
-    static async create(sensorObj) {
+    static async create(Obj, uuid) {
         let response = new Response();
-        await Sensor.create(sensorObj)
+        let objSensor = Sensor.build({
+            sc1: Obj.sensors.sc1,
+            sc2: Obj.sensors.sc2,
+            scx1: Obj.sensors.scx1,
+            scx2: Obj.sensors.scx2,
+            volume: Obj.sensors.volume,
+            uuid_device: uuid
+        });
+        await Sensor.create(objSensor.dataValues)
         .then( (value) => {
             response.data = value.toJSON();
             response.hasError = false;
