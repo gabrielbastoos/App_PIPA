@@ -6,7 +6,7 @@ var client = connection;
 //publish message 'Hello' to topic 'NODEMCU_PIPA'
 setInterval(function(){
     client.publish('NODEMCU_PIPA', 'pipa_001');
-}, 50000);
+}, 300000);
 
 setInterval(function(){
     client.publish('NODEMCU_PIPA', 'pipa_001_status');
