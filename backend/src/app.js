@@ -6,6 +6,7 @@ const publisher = require('./mqtt/publisher');
 const router = express.Router();
 const index = require('./routes/index');
 const statusRoute = require('./routes/statusRoute');
+const userRoute = require('./routes/userRoute');
 
 module.exports = () => {
     const app = express();
@@ -14,6 +15,7 @@ module.exports = () => {
   
     app.use('/', index);
     app.use('/status', statusRoute);
+    app.use('/user', userRoute);
 
     sequelize
       .sync()
