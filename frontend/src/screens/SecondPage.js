@@ -7,7 +7,7 @@ import axios from 'axios';
 
 export default function SecondPage() {
 
-	const [results, setResults] = useState([])
+	//const [results, setResults] = useState([])
   const [data, setData] = useState({})
   const [loading, setLoading] = useState(true)
   const [statusBomba, setStatusBomba] = useState(false)
@@ -17,18 +17,18 @@ export default function SecondPage() {
 	
   async function getApiDados(){
 		try {
-			//const url = "http://app-pipa.herokuapp.com/status"
-      const url = "https://pipaa.free.beeceptor.com"
+			const url = "http://app-pipa.herokuapp.com/status"
 			const response = await axios.get(url)
-      console.log(response.data.sensors);
-			setResults(response.data.sensors);
+      console.log(response.data.data)
       var data = {
         label:[''],
-        porcentagem: [results.volume/100],
-        percentText:results.volume,
+        porcentagem: [response.data.data.volume/100],
+        percentText:response.data.data.volume,
         
       };
       setData(data)
+      console.log(data)
+      setLoading(false);
 		} catch (e) {
 		alert("Erro ao obter os dados")
 		}
@@ -53,8 +53,6 @@ export default function SecondPage() {
 
 			const response = await axios.post(url)
       console.log(response);
-			//setResults(response.data.sensors);
-      setData(data)
 		} catch (e) {
 		alert("Erro ao obter os dados")
 		}
@@ -62,16 +60,15 @@ export default function SecondPage() {
 
 
 	useEffect (() => {
-		//getApiDados();
-    var data = {
-      label:[''],
-      porcentagem: [0.5],
-      percentText:50,
+		getApiDados();
+    // var data = {
+    //   label:[''],
+    //   porcentagem: [0.5],
+    //   percentText:50,
       
-    };
-    setData(data)
-    setLoading(false)
-    console.log(data)
+    // };
+    //setData(data)
+   // console.log(data)
 	}, []);
 
 
@@ -212,7 +209,7 @@ const styles  = StyleSheet.create ({
 
   },
   percentNumber: {
-    marginLeft:screen.width*0.2,
+    marginLeft:screen.width*0.16,
     top:screen.height*0.12,
     fontSize:20,
     color:"green"

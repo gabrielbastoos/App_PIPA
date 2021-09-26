@@ -45,7 +45,7 @@ const char* ssid = "Wifi";
 const char* password = "w1f1gabriel";
 
 int altura_da_caixa = 70;
-int altura_da_tampa = 17;
+int altura_da_tampa = 14  ;
 int ledInterno = 2;
 int TRIGGER_PIN = 26;
 int ECHO_PIN    = 27;

@@ -2,8 +2,31 @@ import React, {useState} from 'react';
 import {SafeAreaView, StyleSheet,TouchableOpacity, Text, TextInput, Image, View, KeyboardAvoidingView } from 'react-native';
 import * as screen from "../constants/dimensions";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import axios from 'axios';
+
 
 export default function FirstPage({navigation}) {
+
+async function Login(){
+    const url = "http://app-pipa.herokuapp.com/user/login"
+    var userData = {
+      email:email,
+      password:password
+    }
+    console.log(userData)
+    await axios.post(url,userData)
+    .then(() => console.log(navigation.navigate("SecondPage")))
+    .catch(function (error) {
+      console.log(error.response.status);
+      if(error.response.status == 404){
+          alert("Usuário não cadastrado")
+      }
+      else{
+        alert("Erro ao obter os dados")
+      }
+    });
+};
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -11,7 +34,7 @@ export default function FirstPage({navigation}) {
   //const [value, onChangeText] = React.useState(props.value);
   const [visible, setVisibility] = React.useState(false);
  
-  
+
   return (
     <SafeAreaView style={styles.container}>           
       <KeyboardAvoidingView behavior={'position'}>
@@ -53,7 +76,7 @@ export default function FirstPage({navigation}) {
           onPress={() => setVisibility(!visible)}
           style={styles.icons}
         />
-      <TouchableOpacity style={styles.submitButton} onPress={() => console.log(navigation.navigate("SecondPage"))}> 
+      <TouchableOpacity style={styles.submitButton} onPress={() => Login()}> 
         <Text style={styles.submitButtonText}>Acessar</Text>
       </TouchableOpacity>
       </KeyboardAvoidingView>
