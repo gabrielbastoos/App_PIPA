@@ -2,6 +2,7 @@
 #define ID_MQTT  "NODEMCU" 
 
 const char* TOPICO_SUBSCRIBE = "NODEMCU_PIPA";    //tópico MQTT de escuta
+const char* TOPICO_ALIVE  = "STATUS_PIPA";   //tópico MQTT de envio de informações para Broker
 const char* TOPICO_PUBLISH  = "NODEJS_PIPA";   //tópico MQTT de envio de informações para Broker
 const char* uuid = "pipa_001";
 const char* uuid_status  = "pipa_001_status";   //tópico MQTT de envio de informações para Broker
