@@ -15,4 +15,12 @@ router.post('/createUser', async (req, res) => {
     res.json(resp);
 });
 
+router.get('/status/:id', async (req, res) => {
+    const { id } = req.params;
+    let resp = await UserRepo.findById(id);
+    if (resp.hasError){
+       res.sendStatus(500);
+    }
+    res.json(resp);
+});
 module.exports = router;

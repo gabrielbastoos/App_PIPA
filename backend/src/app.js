@@ -5,7 +5,7 @@ const publisher = require('./mqtt/publisher');
 
 const router = express.Router();
 const index = require('./routes/index');
-const statusRoute = require('./routes/statusRoute');
+const sensorRoute = require('./routes/sensorRoute');
 const userRoute = require('./routes/userRoute');
 const deviceRoute = require('./routes/deviceRoute');
 
@@ -15,7 +15,7 @@ module.exports = () => {
     app.use(express.json());
   
     app.use('/', index);
-    app.use('/status', statusRoute);
+    app.use('/sensor', sensorRoute);
     app.use('/user', userRoute);
     app.use('/device', deviceRoute);
 
