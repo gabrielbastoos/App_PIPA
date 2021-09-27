@@ -2,17 +2,20 @@ const express = require('express');
 const router = express.Router();
 const UserRepo = require('../repo/userRepo')
 
-router.get('/login', async (req, res) => {
-    let resp = await UserRepo.findUser(req.body);
-    res.sendStatus(resp.data);
-});
-
 router.post('/createUser', async (req, res) => {
     let resp = await UserRepo.create(req.body);
-    if (resp.hasError){
-       res.sendStatus(500);
+    if (resp.status == 500){
+       res.sendStatus(resp.status);
     }
-    res.json(resp);
+    res.status(resp.status).json(resp);
+});
+
+router.post('/login', async (req, res) => {
+    let resp = await UserRepo.findUser(req.body);
+    if (resp.status == 500){
+        res.sendStatus(resp.status);
+     }
+     res.status(resp.status).json(resp);
 });
 
 router.get('/status/:id', async (req, res) => {

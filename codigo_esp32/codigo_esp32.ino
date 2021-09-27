@@ -123,7 +123,7 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length)
     long wifi = WiFi.RSSI();
     char jsonAlive[60];
     sprintf(jsonAlive,"{\"client\":\"%s\",\"wifi_db\":%d,\"status\":\"online\"}", uuid, WiFi.RSSI());
-    MQTT.publish(TOPICO_PUBLISH, jsonAlive);
+    MQTT.publish(TOPICO_ALIVE, jsonAlive);
   }
   else
   {

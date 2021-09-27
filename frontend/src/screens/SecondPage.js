@@ -3,32 +3,73 @@ import { View, StyleSheet, Text, SafeAreaView,ActivityIndicator, TouchableOpacit
 import { ProgressChart } from "react-native-chart-kit";
 import * as screen from "../constants/dimensions";
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+export default function SecondPage({navigation}) {
 
-export default function SecondPage() {
+  const [admin, setAdmin] = useState(false)
+  const [name, setName] = useState("")
+  const [uuid, setUuid] = useState("")
 
-	const [results, setResults] = useState([])
+const getData = async () => {
+  try {
+    var name = await AsyncStorage.getItem('user_name');
+    setName(name);
+    var uuid = await AsyncStorage.getItem('uuid');
+    setUuid(uuid);
+    var admin = await AsyncStorage.getItem('admin');
+    setAdmin(admin);
+    
+    console.log(name)
+    console.log(uuid)
+    console.log(admin)
+  } 
+  catch(e) {
+    console.log(e)
+  }
+}
+
+const clearData = async () => {
+  try {
+    await AsyncStorage.setItem('user_name',"");
+    await AsyncStorage.setItem('uuid',"");
+    await AsyncStorage.setItem('admin',"");
+  } 
+  catch(e) {
+    console.log(e)
+  }
+}
+
+	//const [results, setResults] = useState([])
   const [data, setData] = useState({})
   const [loading, setLoading] = useState(true)
   const [statusBomba, setStatusBomba] = useState(false)
   const [textoBotao, setTextoBotao] = useState("Ligar a bomba")
   const [colorBotao,setColorBotao] = useState("green")
 
-	
+  async function Logout(){
+		try {
+      clearData();
+      console.log(navigation.navigate("Home"))
+		} catch (e) {
+		alert("Erro ao fazer logout")
+		}
+	};
+
   async function getApiDados(){
 		try {
-			//const url = "http://app-pipa.herokuapp.com/status"
-      const url = "https://pipaa.free.beeceptor.com"
+			const url = "http://app-pipa.herokuapp.com/status"
 			const response = await axios.get(url)
-      console.log(response.data.sensors);
-			setResults(response.data.sensors);
+      console.log(response.data.data)
       var data = {
         label:[''],
-        porcentagem: [results.volume/100],
-        percentText:results.volume,
+        porcentagem: [response.data.data.volume/100],
+        percentText:response.data.data.volume,
         
       };
       setData(data)
+      console.log(data)
+      setLoading(false);
 		} catch (e) {
 		alert("Erro ao obter os dados")
 		}
@@ -53,8 +94,6 @@ export default function SecondPage() {
 
 			const response = await axios.post(url)
       console.log(response);
-			//setResults(response.data.sensors);
-      setData(data)
 		} catch (e) {
 		alert("Erro ao obter os dados")
 		}
@@ -62,16 +101,16 @@ export default function SecondPage() {
 
 
 	useEffect (() => {
-		//getApiDados();
-    var data = {
-      label:[''],
-      porcentagem: [0.5],
-      percentText:50,
+    getData();
+		getApiDados();
+    // var data = {
+    //   label:[''],
+    //   porcentagem: [0.5],
+    //   percentText:50,
       
-    };
-    setData(data)
-    setLoading(false)
-    console.log(data)
+    // };
+    //setData(data)
+   // console.log(data)
 	}, []);
 
 
@@ -90,6 +129,10 @@ export default function SecondPage() {
     return (
       <SafeAreaView style={styles.container}>      
         <View>
+          <Text style={styles.headerNameText}>Olá {name}!</Text>
+              <Text style={styles.botaoSair}
+              onPress={() => Logout()}>Sair</Text>
+          
           <Text style={styles.headerText}>Monitoramento atual</Text>
           <View style={styles.linhaCampos}></View>
           <Text style={styles.subtittleText}>Volume atual</Text>        
@@ -143,8 +186,25 @@ const styles  = StyleSheet.create ({
     backgroundColor: "white"
   },
 
+  headerNameText: {
+    marginTop: screen.height * 0.08,
+    marginLeft:screen.width*0.08,
+    alignItems: "flex-end",
+    color: '#abb5be',
+    fontSize: 18,
+    //fontFamily: 'sans-serif-light'
+  },
+  botaoSair:{
+    marginTop: -(screen.height * 0.04),
+    marginBottom:screen.height*0.03,
+    marginLeft:screen.width*0.85,
+    alignItems: "flex-end",
+    color: 'red',
+    fontSize: 16,
+    //fontFamily: 'sans-serif-light'
+  },
   headerText: {
-    marginTop: screen.height * 0.1,
+    marginTop: screen.height * 0.01,
     marginLeft:screen.width*0.08,
     alignItems: "flex-end",
     fontSize: 26,
@@ -212,7 +272,7 @@ const styles  = StyleSheet.create ({
 
   },
   percentNumber: {
-    marginLeft:screen.width*0.2,
+    marginLeft:screen.width*0.16,
     top:screen.height*0.12,
     fontSize:20,
     color:"green"

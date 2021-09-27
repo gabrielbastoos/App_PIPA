@@ -2,6 +2,7 @@
 #define ID_MQTT  "NODEMCU" 
 
 const char* TOPICO_SUBSCRIBE = "NODEMCU_PIPA";    //tópico MQTT de escuta
+const char* TOPICO_ALIVE  = "STATUS_PIPA";   //tópico MQTT de envio de informações para Broker
 const char* TOPICO_PUBLISH  = "NODEJS_PIPA";   //tópico MQTT de envio de informações para Broker
 const char* uuid = "pipa_001";
 const char* uuid_status  = "pipa_001_status";   //tópico MQTT de envio de informações para Broker
@@ -44,7 +45,7 @@ const char* ssid = "Wifi";
 const char* password = "w1f1gabriel";
 
 int altura_da_caixa = 70;
-int altura_da_tampa = 17;
+int altura_da_tampa = 14  ;
 int ledInterno = 2;
 int TRIGGER_PIN = 26;
 int ECHO_PIN    = 27;

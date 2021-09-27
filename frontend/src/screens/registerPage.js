@@ -2,6 +2,9 @@ import React from 'react';
 import {SafeAreaView, StyleSheet,TouchableOpacity, Text, View, KeyboardAvoidingView, TextInput } from 'react-native';
 import * as screen from "../constants/dimensions";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import axios from 'axios';
+import CryptoES from "crypto-es";
+import * as env from "../constants/envFile";
 
 export default function RegisterPage({navigation}) {
   
@@ -17,35 +20,43 @@ export default function RegisterPage({navigation}) {
 
 
   async function Cadastrar() {
+    console.log(env.secret)
+    const passwordEncrypted = CryptoES.AES.encrypt(senha,env.secret).toString();
+
+    var C = require("crypto-js");
+
+    var Decrypted = C.AES.decrypt(passwordEncrypted, env.secret);
+    var result =Decrypted.toString(C.enc.Utf8);
+
+    console.log(result)
 
     var jsonCadastro = {
-      "admin-credential": credencial,
-      "user-name": nome,
-      "uuid-pipa":uuid,
-      "user-email":email,
-      "user-password":senha
+      "name": nome,      
+      "email":email,
+      "password":passwordEncrypted,
+      "uuid":uuid,
+      "admin":true,
+      "createdBy": credencial
     };
+    
 
     console.log(jsonCadastro);
 
-    // var resposta = "";
-    // await fetch('URL DE CADASTRO', {
-    //   method: 'POST',
-    //   body:jsonCadastro
-    // })
-    // .then((response) => response.text())
-    // .then((responseText) => {
-    //   resposta = responseText;
-    //   console.log('respostaCadastro:',resposta)
-      
-    // })
-    // .catch((error) => {
-    //   console.log(error)
-    // });
-
-    // //console.log(this.NotificationContainer.registerForPushNotificationsAsync);
-    //     registerForPushNotificationsAsync();
-
+    const url = "http://app-pipa.herokuapp.com/user/createUser"
+    await axios.post(url,jsonCadastro)
+    .then(() => {
+      alert("Cadastro realizado com sucesso")
+      console.log(navigation.navigate("FirstPage"))})
+    .catch(function (error) {
+      console.log(error.response.status);
+      alert("Erro ao efetuar cadastro")
+      // if(error.response.status == 404){
+      //     alert("Usuário não cadastrado")
+      // }
+      // else{
+      //   alert("Erro ao obter os dados")
+      // }
+    });
   }
 
   return (
@@ -59,7 +70,7 @@ export default function RegisterPage({navigation}) {
         <TextInput 
           style={styles.entradaTexto}
           placeholder={"Digite a credencial"}
-          maxLength={5}
+          maxLength={40}
           value={credencial}
           onChangeText={(newCredencial) => setCredencial(newCredencial)}
         />
