@@ -60,15 +60,15 @@ class UserRepo{
         })
         .then( (value) => {
             if (value != null){
-                response.data = value;
+                response.data = value.toJSON();
                 response.hasError = false;
                 response.error = null;
                 response.status = 200;
             }
             else{
-                response.data = "Invalid email or password";
+                response.data = null;
                 response.hasError = true;
-                response.error = null; 
+                response.error = "Invalid email or password"; 
                 response.status = 404;  
             }
         })
