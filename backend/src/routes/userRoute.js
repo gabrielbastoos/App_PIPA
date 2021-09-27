@@ -4,7 +4,10 @@ const UserRepo = require('../repo/userRepo')
 
 router.post('/login', async (req, res) => {
     let resp = await UserRepo.findUser(req.body);
-    res.sendStatus(resp.data);
+    if (resp.status == 500){
+        res.sendStatus(resp.status);
+     }
+     res.status(resp.status).json(resp);
 });
 
 router.post('/createUser', async (req, res) => {
