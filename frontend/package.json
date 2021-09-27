@@ -11,6 +11,8 @@
     "@react-navigation/native": "^6.0.2",
     "@react-navigation/native-stack": "^6.1.0",
     "axios": "^0.21.1",
+    "crypto-es": "^1.2.7",
+    "crypto-js": "^4.1.1",
     "expo": "^42.0.3",
     "expo-status-bar": "^1.0.4",
     "ngrok": "^4.2.2",

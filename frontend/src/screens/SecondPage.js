@@ -13,7 +13,6 @@ export default function SecondPage() {
   const [statusBomba, setStatusBomba] = useState(false)
   const [textoBotao, setTextoBotao] = useState("Ligar a bomba")
   const [colorBotao,setColorBotao] = useState("green")
-
 	
   async function getApiDados(){
 		try {

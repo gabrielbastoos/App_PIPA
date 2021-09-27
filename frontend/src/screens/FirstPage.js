@@ -3,15 +3,18 @@ import {SafeAreaView, StyleSheet,TouchableOpacity, Text, TextInput, Image, View,
 import * as screen from "../constants/dimensions";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
-
+import CryptoES from "crypto-es";
+import * as env from "../constants/envFile";
 
 export default function FirstPage({navigation}) {
 
 async function Login(){
     const url = "http://app-pipa.herokuapp.com/user/login"
+    const passwordEncrypted = CryptoES.AES.encrypt(password,env.secret).toString();
+
     var userData = {
       email:email,
-      password:password
+      password:passwordEncrypted
     }
     console.log(userData)
     await axios.post(url,userData)
@@ -25,7 +28,7 @@ async function Login(){
         alert("Erro ao obter os dados")
       }
     });
-};
+  };
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

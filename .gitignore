@@ -525,3 +525,4 @@ FodyWeavers.xsd
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,visualstudio,node
 codigo_esp32/constants_h.h
 codigo_esp32/constants_h.h
+frontend/src/constants/envFile.js
