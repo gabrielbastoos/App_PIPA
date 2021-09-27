@@ -3,9 +3,42 @@ import { View, StyleSheet, Text, SafeAreaView,ActivityIndicator, TouchableOpacit
 import { ProgressChart } from "react-native-chart-kit";
 import * as screen from "../constants/dimensions";
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+export default function SecondPage({navigation}) {
 
-export default function SecondPage() {
+  const [admin, setAdmin] = useState(false)
+  const [name, setName] = useState("")
+  const [uuid, setUuid] = useState("")
+
+const getData = async () => {
+  try {
+    var name = await AsyncStorage.getItem('user_name');
+    setName(name);
+    var uuid = await AsyncStorage.getItem('uuid');
+    setUuid(uuid);
+    var admin = await AsyncStorage.getItem('admin');
+    setAdmin(admin);
+    
+    console.log(name)
+    console.log(uuid)
+    console.log(admin)
+  } 
+  catch(e) {
+    console.log(e)
+  }
+}
+
+const clearData = async () => {
+  try {
+    await AsyncStorage.setItem('user_name',"");
+    await AsyncStorage.setItem('uuid',"");
+    await AsyncStorage.setItem('admin',"");
+  } 
+  catch(e) {
+    console.log(e)
+  }
+}
 
 	//const [results, setResults] = useState([])
   const [data, setData] = useState({})
@@ -13,7 +46,16 @@ export default function SecondPage() {
   const [statusBomba, setStatusBomba] = useState(false)
   const [textoBotao, setTextoBotao] = useState("Ligar a bomba")
   const [colorBotao,setColorBotao] = useState("green")
-	
+
+  async function Logout(){
+		try {
+      clearData();
+      console.log(navigation.navigate("Home"))
+		} catch (e) {
+		alert("Erro ao fazer logout")
+		}
+	};
+
   async function getApiDados(){
 		try {
 			const url = "http://app-pipa.herokuapp.com/status"
@@ -59,6 +101,7 @@ export default function SecondPage() {
 
 
 	useEffect (() => {
+    getData();
 		getApiDados();
     // var data = {
     //   label:[''],
@@ -86,6 +129,10 @@ export default function SecondPage() {
     return (
       <SafeAreaView style={styles.container}>      
         <View>
+          <Text style={styles.headerNameText}>Olá {name}!</Text>
+              <Text style={styles.botaoSair}
+              onPress={() => Logout()}>Sair</Text>
+          
           <Text style={styles.headerText}>Monitoramento atual</Text>
           <View style={styles.linhaCampos}></View>
           <Text style={styles.subtittleText}>Volume atual</Text>        
@@ -139,8 +186,25 @@ const styles  = StyleSheet.create ({
     backgroundColor: "white"
   },
 
+  headerNameText: {
+    marginTop: screen.height * 0.08,
+    marginLeft:screen.width*0.08,
+    alignItems: "flex-end",
+    color: '#abb5be',
+    fontSize: 18,
+    //fontFamily: 'sans-serif-light'
+  },
+  botaoSair:{
+    marginTop: -(screen.height * 0.04),
+    marginBottom:screen.height*0.03,
+    marginLeft:screen.width*0.85,
+    alignItems: "flex-end",
+    color: 'red',
+    fontSize: 16,
+    //fontFamily: 'sans-serif-light'
+  },
   headerText: {
-    marginTop: screen.height * 0.1,
+    marginTop: screen.height * 0.01,
     marginLeft:screen.width*0.08,
     alignItems: "flex-end",
     fontSize: 26,

@@ -5,8 +5,20 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 import CryptoES from "crypto-es";
 import * as env from "../constants/envFile";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function FirstPage({navigation}) {
+
+const storeData = async (response) => {
+  try {
+    await AsyncStorage.setItem("user_name",response.data.data.userName)
+    await AsyncStorage.setItem("admin",response.data.data.admin?"true":"false")
+    await AsyncStorage.setItem("uuid",response.data.data['uuid'])
+  }
+  catch (e) {
+    console.log("Error",e)
+  }
+  }
 
 async function Login(){
     const url = "http://app-pipa.herokuapp.com/user/login"
@@ -14,11 +26,16 @@ async function Login(){
 
     var userData = {
       email:email,
-      password:passwordEncrypted
+      password:"1234"
+      //password:passwordEncrypted
     }
     console.log(userData)
     await axios.post(url,userData)
-    .then(() => console.log(navigation.navigate("SecondPage")))
+    .then((response) => {
+      //console.log(response.data.data)
+      storeData(response);
+      console.log(navigation.navigate("SecondPage"))
+    })
     .catch(function (error) {
       console.log(error.response.status);
       if(error.response.status == 404){
