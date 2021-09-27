@@ -9,10 +9,10 @@ router.post('/login', async (req, res) => {
 
 router.post('/createUser', async (req, res) => {
     let resp = await UserRepo.create(req.body);
-    if (resp.hasError){
-       res.sendStatus(500);
+    if (resp.status == 500){
+       res.sendStatus(resp.status);
     }
-    res.json(resp);
+    res.status(resp.status).json(resp);
 });
 
 module.exports = router;
