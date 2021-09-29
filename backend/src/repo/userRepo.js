@@ -5,7 +5,8 @@ class UserRepo{
 
     static async create(Obj) {
         let response = new Response();
-        let userWithSameEmail = this.findByEmail(Obj.email);
+        let userWithSameEmail = await this.findByEmail(Obj.email);
+        console.log("Aqui: ", userWithSameEmail);
         if (userWithSameEmail != null){
             response.data = null;
             response.hasError = true;
