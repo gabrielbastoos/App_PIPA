@@ -95,6 +95,7 @@ export default function RegisterPage({navigation}) {
         <TextInput 
           style={styles.entradaTexto}
           placeholder={"Código do sensor"}
+          autoCapitalize={'none'}
           maxLength={10}
           value={uuid}
           onChangeText={(newUuid) => setUUID(newUuid)}
@@ -107,6 +108,7 @@ export default function RegisterPage({navigation}) {
         <TextInput 
           style={styles.entradaTexto}
           placeholder={"Digite o e-mail do usuário"}
+          autoCapitalize={'none'}
           maxLength={40}
           value={email}
           onChangeText={(newEmail) => setEmail(newEmail)}

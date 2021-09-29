@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { View, StyleSheet, Text, SafeAreaView,ActivityIndicator, TouchableOpacity } from 'react-native';
-import { ProgressChart } from "react-native-chart-kit";
+import { ProgressChart, LineChart } from "react-native-chart-kit";
+import { DataTable } from 'react-native-paper';
 import * as screen from "../constants/dimensions";
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -42,6 +43,7 @@ const clearData = async () => {
 
 	//const [results, setResults] = useState([])
   const [data, setData] = useState({})
+  const [sensorLevel, setsensorLevel] = useState({})
   const [loading, setLoading] = useState(true)
   const [statusBomba, setStatusBomba] = useState(false)
   const [textoBotao, setTextoBotao] = useState("Ligar a bomba")
@@ -67,6 +69,15 @@ const clearData = async () => {
         percentText:response.data.data.volume,
         
       };
+
+      var sensorLevel = {
+        CLow: response.data.data.sc1?"1":"0",
+        CHigh: response.data.data.sc2?"1":"0",
+        CxLow: response.data.data.scx1?"1":"0",
+        CxHigh: response.data.data.scx2?"1":"0",
+        
+      };
+      setsensorLevel(sensorLevel);
       setData(data)
       console.log(data)
       setLoading(false);
@@ -74,6 +85,19 @@ const clearData = async () => {
 		alert("Erro ao obter os dados")
 		}
 	};
+
+  const volumeLineChart = {
+    labels: ["January", "February", "March", "April", "May", "June"],
+    datasets: [
+      {
+        data: [20, 45, 28, 80, 99, 43],
+        color: (opacity = 1) => `rgba(0, 0, 139, ${opacity})`, // optional
+        strokeWidth: 2, // optional
+        withDots: false
+      }
+    ],
+
+  };
 
   async function switchBombaStatus(){
 		try {
@@ -115,15 +139,6 @@ const clearData = async () => {
 
 
 
-  //tableHead: ['Sensor Cisterna Topo', 'Sensor Cisterna Fundo', 'Sensor Caixa Topo', 'Sensor Caixa Fundo'],
-	//
-	//tableData: [
-	//  [results.sc1?"1":"0", results.sc2?"1":"0", results.scx1?"1":"0",results.scx2?"1":"0"]
-
-	//const Volume = {
-	//tableHead: ['Volume'],
-	//tableData: [
-	//  [results.volume + ' %']
 
 	if(loading == false){
     return (
@@ -144,7 +159,7 @@ const clearData = async () => {
               height={screen.height * 0.2}
               strokeWidth={16}
               radius={55}
-              chartConfig={chartConfig}
+              chartConfig={progressChartConfig}
               hideLegend={true}
             />     
             <TouchableOpacity style={{
@@ -163,10 +178,38 @@ const clearData = async () => {
             <Text style={styles.graficoText}>Gráfico de volume</Text>   
             <View style={styles.linhaCampos}></View> 
             <View style={styles.linhaCampoEscura}></View> 
+              <LineChart
+                data={volumeLineChart}
+                width={screen.width}
+                height={220}
+                chartConfig={lineChartConfig}
+              />
+
   
             <Text style={styles.nivelText}>Nível Atual</Text>   
             <View style={styles.linhaCampos}></View> 
-            <View style={styles.linhaCampoNivel}></View> 
+            <View style={styles.linhaCampoNivel}></View>
+              <DataTable>
+                <DataTable.Header>
+                <DataTable.Title></DataTable.Title>
+                  <DataTable.Title>Baixo</DataTable.Title>
+                  <DataTable.Title>Alto</DataTable.Title>
+                </DataTable.Header>
+
+                <DataTable.Row>
+                  <DataTable.Cell>Cisterna</DataTable.Cell>
+                  <DataTable.Cell>{sensorLevel.CLow}</DataTable.Cell>
+                  <DataTable.Cell>{sensorLevel.CHigh}</DataTable.Cell>
+                </DataTable.Row>
+
+                <DataTable.Row>
+                  <DataTable.Cell>Caixa d'água</DataTable.Cell>
+                  <DataTable.Cell>{sensorLevel.CxLow}</DataTable.Cell>
+                  <DataTable.Cell>{sensorLevel.CxHigh}</DataTable.Cell>
+                </DataTable.Row>
+
+
+              </DataTable> 
         </View>
   </SafeAreaView>  
     );
@@ -279,12 +322,22 @@ const styles  = StyleSheet.create ({
   }
 
 })
-const chartConfig = {
+const progressChartConfig = {
   backgroundGradientFrom: "black",
   backgroundGradientFromOpacity: 0,
   backgroundGradientTo: "black",
   backgroundGradientToOpacity: 0,
   color: (opacity = 1) => `rgba(127, 225, 173, ${opacity})`,
+  strokeWidth: 2, // optional, default 3
+  barPercentage: 0.5,
+  useShadowColorFromDataset: false, // optional
+  
+};
+
+const lineChartConfig = {
+  backgroundGradientFromOpacity: 0,
+  backgroundGradientToOpacity: 0,
+  color: (opacity = 1) => `rgba(128, 128, 128, ${opacity})`,
   strokeWidth: 2, // optional, default 3
   barPercentage: 0.5,
   useShadowColorFromDataset: false, // optional
