@@ -1,19 +1,16 @@
 const Devices = require('../models/devices');
 const User = require('../models/users');
 const Response = require('../shared/response-model');
+const Crypto = require('crypto-js');
 
 class UserRepo{
 
     static async create(Obj) {
-        let response = new Response();
+        var response;
         let userWithSameEmail = await this.findByEmail(Obj.email);
-        console.log("Aqui: ", userWithSameEmail);
 
         if (userWithSameEmail != null){
-            response.data = null;
-            response.hasError = true;
-            response.error = "User with the same email already exist in the database";
-            response.status = 409;
+            response = new Response(null, true, "User with the same email already exist in the database", 409);
             return response;
         }
 
@@ -30,20 +27,44 @@ class UserRepo{
         });
 
         await User.create(userObj.dataValues)
-        .then( (value) => {
-            response.data = value.toJSON();
-            response.hasError = false;
-            response.error = null;
-            response.status = 200;
+        .then( (user) => {
+            response = new Response(user.toJSON(), false, null, 200);
         })
         .catch( (error) => {
             // ToDo: log the error to a file
             console.log(error);
-            response.data = null;
-            response.hasError = true;
-            response.error = error.parent.detail;
-            response.status = 500;
+            //ToDo: Verificar caso de inserção de uuid não existente na tabela Devices
+            response = new Response(null, true, error.parent.detail, 500);
         });
+        return response;
+    }
+
+    static async findUser(Obj){
+        var response;
+
+        await this.findByEmail(Obj.email)
+        .then( (user) => {
+            if (user != null){
+                let loginPassDecrypted = Crypto.AES.decrypt(Obj.password, process.env.ENCRYPTED_SECRET);
+                let userPassDecrypted = Crypto.AES.decrypt(user.password, process.env.ENCRYPTED_SECRET);
+
+                if (loginPassDecrypted.toString(Crypto.enc.Utf8) == userPassDecrypted.toString(Crypto.enc.Utf8)){
+                    response = new Response(user.toJSON(), false, null, 200);
+                }
+                else{
+                    response = new Response(null, true, "Invalid email or password", 404);
+                }
+            }
+            else{
+                response = new Response(null, true, "Invalid email or password", 404);
+            }
+        })
+        .catch( (error) => {
+            // ToDo: log the error to a file
+            console.log(error);
+            response = new Response(null, true, error.parent.detail, 500);
+        });
+
         return response;
     }
 
@@ -55,38 +76,6 @@ class UserRepo{
         else{
             return null;
         }
-    }
-
-    static async findUser(Obj){
-        let response = new Response();
-        await User.findOne({where:{
-            email: Obj.email,
-            password: Obj.password
-            }
-        })
-        .then( (value) => {
-            if (value != null){
-                response.data = value.toJSON();
-                response.hasError = false;
-                response.error = null;
-                response.status = 200;
-            }
-            else{
-                response.data = null;
-                response.hasError = true;
-                response.error = "Invalid email or password"; 
-                response.status = 404;  
-            }
-        })
-        .catch( (error) => {
-            // ToDo: log the error to a file
-            console.log(error);
-            response.data = null;
-            response.hasError = true;
-            response.error = error;
-            response.status = 500;
-        });
-        return response;
     }
 }
 
