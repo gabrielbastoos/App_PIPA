@@ -46,7 +46,7 @@ export default function RegisterPage({navigation}) {
     await axios.post(url,jsonCadastro)
     .then(() => {
       alert("Cadastro realizado com sucesso")
-      console.log(navigation.navigate("FirstPage"))})
+      console.log(navigation.navigate("Home"))})
     .catch(function (error) {
       console.log(error.response.status);
       alert("Erro ao efetuar cadastro")
@@ -95,6 +95,7 @@ export default function RegisterPage({navigation}) {
         <TextInput 
           style={styles.entradaTexto}
           placeholder={"Código do sensor"}
+          autoCapitalize={'none'}
           maxLength={10}
           value={uuid}
           onChangeText={(newUuid) => setUUID(newUuid)}
@@ -107,6 +108,7 @@ export default function RegisterPage({navigation}) {
         <TextInput 
           style={styles.entradaTexto}
           placeholder={"Digite o e-mail do usuário"}
+          autoCapitalize={'none'}
           maxLength={40}
           value={email}
           onChangeText={(newEmail) => setEmail(newEmail)}
