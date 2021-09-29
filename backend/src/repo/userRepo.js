@@ -1,3 +1,4 @@
+const Devices = require('../models/devices');
 const User = require('../models/users');
 const Response = require('../shared/response-model');
 
@@ -7,6 +8,7 @@ class UserRepo{
         let response = new Response();
         let userWithSameEmail = await this.findByEmail(Obj.email);
         console.log("Aqui: ", userWithSameEmail);
+
         if (userWithSameEmail != null){
             response.data = null;
             response.hasError = true;
@@ -14,7 +16,9 @@ class UserRepo{
             response.status = 409;
             return response;
         }
+
         let userName = Obj.name.split(" ");
+
         let userObj = User.build({
             name: Obj.name,
             userName: userName[0],
@@ -24,6 +28,7 @@ class UserRepo{
             admin: Obj.admin,
             createdBy: Obj.createdBy
         });
+
         await User.create(userObj.dataValues)
         .then( (value) => {
             response.data = value.toJSON();
@@ -36,7 +41,7 @@ class UserRepo{
             console.log(error);
             response.data = null;
             response.hasError = true;
-            response.error = error;
+            response.error = error.parent.detail;
             response.status = 500;
         });
         return response;
