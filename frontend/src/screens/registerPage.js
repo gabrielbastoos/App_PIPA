@@ -46,7 +46,7 @@ export default function RegisterPage({navigation}) {
     await axios.post(url,jsonCadastro)
     .then(() => {
       alert("Cadastro realizado com sucesso")
-      console.log(navigation.navigate("FirstPage"))})
+      console.log(navigation.navigate("Home"))})
     .catch(function (error) {
       console.log(error.response.status);
       alert("Erro ao efetuar cadastro")

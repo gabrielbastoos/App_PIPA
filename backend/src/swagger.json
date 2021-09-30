@@ -1,0 +1,23 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "API PIPA",
+      "description": "Swagger - API PIPA",
+      "version": "1.0"
+    },
+    "produces": ["application/json"],
+    "host": "localhost:3000",
+    "basePath": "/",
+    "paths": {
+      "/status": {
+        "get": {
+          "x-swagger-router-controller": "middleware-name1",
+          "operationId": "swagTest",
+          "tags": ["Sensor Route"],
+          "description": "",
+          "parameters": [],
+          "responses": {}
+        }
+      }
+    }
+ }
