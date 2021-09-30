@@ -77,6 +77,24 @@ class UserRepo{
             return null;
         }
     }
+
+    static async findById(id){
+        let response = new Response();
+        await User.findByPk(id)
+        .then( (value) => {
+                response.data = value;
+                response.hasError = false;
+                response.error = null;
+        })
+        .catch( (error) => {
+            // ToDo: log the error to a file
+            console.log(error);
+            response.data = null;
+            response.hasError = true;
+            response.error = error;
+        });
+        return response;
+    }
 }
 
 module.exports = UserRepo;

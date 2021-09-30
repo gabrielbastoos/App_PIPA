@@ -7,7 +7,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 
 const index = require('./routes/index');
-const statusRoute = require('./routes/statusRoute');
+const sensorRoute = require('./routes/sensorRoute');
 const userRoute = require('./routes/userRoute');
 const deviceRoute = require('./routes/deviceRoute');
 
@@ -15,11 +15,12 @@ module.exports = () => {
     const app = express();
   
     app.use(express.json());
+
     app.use('/', swaggerUi.serve);
     app.get('/', swaggerUi.setup(swaggerDocument));
 
     //app.use('/', index);
-    app.use('/status', statusRoute);
+    app.use('/sensor', sensorRoute);
     app.use('/user', userRoute);
     app.use('/device', deviceRoute);
 

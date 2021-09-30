@@ -26,8 +26,7 @@ async function Login(){
 
     var userData = {
       email:email,
-      password:"1234"
-      //password:passwordEncrypted
+      password:passwordEncrypted
     }
     console.log(userData)
     await axios.post(url,userData)
