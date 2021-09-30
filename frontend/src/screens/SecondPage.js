@@ -1,10 +1,17 @@
 import React, {useState, useEffect} from 'react';
-import { View, StyleSheet, Text, SafeAreaView,ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, SafeAreaView,ActivityIndicator, TouchableOpacity,ScrollView,RefreshControl } from 'react-native';
 import { ProgressChart, LineChart } from "react-native-chart-kit";
-import { DataTable } from 'react-native-paper';
+import { DataTable} from 'react-native-paper';
+import {Badge} from 'react-native-elements';
 import * as screen from "../constants/dimensions";
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const wait = timeout => {
+  return new Promise(resolve => {
+    setTimeout(resolve, timeout);
+  });
+};
 
 export default function SecondPage({navigation}) {
 
@@ -87,10 +94,10 @@ const clearData = async () => {
 	};
 
   const volumeLineChart = {
-    labels: ["January", "February", "March", "April", "May", "June"],
+    labels: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
     datasets: [
       {
-        data: [20, 45, 28, 80, 99, 43],
+        data: [20, 45, 28, 80, 99, 43, 12, 44, 55, 77],
         color: (opacity = 1) => `rgba(0, 0, 139, ${opacity})`, // optional
         strokeWidth: 2, // optional
         withDots: false
@@ -98,6 +105,14 @@ const clearData = async () => {
     ],
 
   };
+
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+
+    wait(1000).then(() => setRefreshing(false));
+  }, []);
 
   async function switchBombaStatus(){
 		try {
@@ -143,7 +158,8 @@ const clearData = async () => {
 	if(loading == false){
     return (
       <SafeAreaView style={styles.container}>      
-        <View>
+        <ScrollView
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>   
           <Text style={styles.headerNameText}>Olá {name}!</Text>
               <Text style={styles.botaoSair}
               onPress={() => Logout()}>Sair</Text>
@@ -189,28 +205,46 @@ const clearData = async () => {
             <Text style={styles.nivelText}>Nível Atual</Text>   
             <View style={styles.linhaCampos}></View> 
             <View style={styles.linhaCampoNivel}></View>
-              <DataTable>
+              <DataTable
+              style={{
+                marginBottom:screen.height*0.04}}>
                 <DataTable.Header>
                 <DataTable.Title></DataTable.Title>
                   <DataTable.Title>Baixo</DataTable.Title>
-                  <DataTable.Title>Alto</DataTable.Title>
+                  <DataTable.Title>Topo</DataTable.Title>
                 </DataTable.Header>
 
                 <DataTable.Row>
                   <DataTable.Cell>Cisterna</DataTable.Cell>
-                  <DataTable.Cell>{sensorLevel.CLow}</DataTable.Cell>
-                  <DataTable.Cell>{sensorLevel.CHigh}</DataTable.Cell>
+                  <DataTable.Cell>
+                     <Badge 
+                     value={sensorLevel.CLow=="1"?"Detectado":"Não-detectado"} 
+                     status={sensorLevel.CLow=="1"?"success":"error"}/>
+                  </DataTable.Cell>
+                  <DataTable.Cell>
+                  <Badge 
+                     value={sensorLevel.CHigh=="1"?"Detectado":"Não-detectado"} 
+                     status={sensorLevel.CHigh=="1"?"success":"error"}/>
+                  </DataTable.Cell>
                 </DataTable.Row>
 
                 <DataTable.Row>
                   <DataTable.Cell>Caixa d'água</DataTable.Cell>
-                  <DataTable.Cell>{sensorLevel.CxLow}</DataTable.Cell>
-                  <DataTable.Cell>{sensorLevel.CxHigh}</DataTable.Cell>
+                  <DataTable.Cell>
+                  <Badge 
+                     value={sensorLevel.CxLow=="1"?"Detectado":"Não-detectado"} 
+                     status={sensorLevel.CxLow=="1"?"success":"error"}/>
+                  </DataTable.Cell>
+                  <DataTable.Cell>
+                  <Badge 
+                     value={sensorLevel.CxHigh=="1"?"Detectado":"Não-detectado"} 
+                     status={sensorLevel.CxHigh=="1"?"success":"error"}/>
+                  </DataTable.Cell>
                 </DataTable.Row>
 
 
-              </DataTable> 
-        </View>
+              </DataTable>
+        </ScrollView >
   </SafeAreaView>  
     );
   }
@@ -222,13 +256,11 @@ const clearData = async () => {
   }
 	
 }
-
 const styles  = StyleSheet.create ({
   container: {
     flex: 1,
     backgroundColor: "white"
   },
-
   headerNameText: {
     marginTop: screen.height * 0.08,
     marginLeft:screen.width*0.08,
