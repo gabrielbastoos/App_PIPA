@@ -10,4 +10,13 @@ router.post('/create', async (req, res) => {
      res.json(resp);
 });
 
+router.get('/status/:uuid', async (req, res) => {
+    const { uuid } = req.params;
+    let resp = await DeviceRepo.findByUuid(uuid);
+    if (resp.hasError){
+        res.sendStatus(500);
+     }
+     res.json(resp);
+});
+
 module.exports = router;

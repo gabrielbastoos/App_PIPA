@@ -2,9 +2,31 @@ const Sensor = require('../models/sensors');
 const Response = require('../shared/response-model');
 
 class SensorRepo{
-    static async findLast() {
+    static async findAll(uuid) {
         let response = new Response();
-        await Sensor.findOne({ limit: 1, order: [ [ 'createdAt', 'DESC' ]] })
+        let sensorList = [];
+        await Sensor.findAll({ where:{uuid_device: uuid}})
+        .then( (list) => {
+            list.map( item => {
+                sensorList.push(item.toJSON());
+            });
+            response.data = sensorList;
+            response.hasError = false;
+            response.error = null;
+        })
+        .catch( error => {
+            // ToDo Log the error to a file
+            console.log(error);
+            response.data = null;
+            response.hasError = true;
+            response.error = error;
+        });
+        return response;
+    }
+
+    static async findLast(uuid) {
+        let response = new Response();
+        await Sensor.findOne({ limit: 1, order: [ [ 'createdAt', 'DESC' ]], where: { uuid_device: uuid } })
         .then( (value) => {
             response.data = value;
             response.hasError = false;
