@@ -31,6 +31,7 @@ const getData = async () => {
     console.log(name)
     console.log(uuid)
     console.log(admin)
+    
   } 
   catch(e) {
     console.log(e)
@@ -55,6 +56,9 @@ const clearData = async () => {
   const [statusBomba, setStatusBomba] = useState(false)
   const [textoBotao, setTextoBotao] = useState("Ligar a bomba")
   const [colorBotao,setColorBotao] = useState("green")
+  const [listaVolumes,setListaVolumes] = useState([])
+  const [listaDatas,setListaDatas] = useState([])
+  const [consumo,setConsumo] = useState(200)
 
   async function Logout(){
 		try {
@@ -67,7 +71,7 @@ const clearData = async () => {
 
   async function getApiDados(){
 		try {
-			const url = "http://app-pipa.herokuapp.com/status"
+			const url = "http://app-pipa.herokuapp.com/sensor/status/pipa_001"
 			const response = await axios.get(url)
       console.log(response.data.data)
       var data = {
@@ -78,6 +82,8 @@ const clearData = async () => {
       };
 
       var sensorLevel = {
+        CurrentDay: response.data.data.updatedAt.split("T")[0].substring(8,10),
+        CurrentMonth: response.data.data.updatedAt.split("T")[0].substring(5,7),
         CLow: response.data.data.sc1?"1":"0",
         CHigh: response.data.data.sc2?"1":"0",
         CxLow: response.data.data.scx1?"1":"0",
@@ -85,22 +91,46 @@ const clearData = async () => {
         
       };
       setsensorLevel(sensorLevel);
+      console.log(sensorLevel.CurrentDay)
       setData(data)
-      console.log(data)
+      //console.log(data)
       setLoading(false);
 		} catch (e) {
 		alert("Erro ao obter os dados")
+    console.log(navigation.navigate("Home"))
 		}
 	};
 
+  async function getListaVolumes(){
+		try {
+
+      const url = "http://app-pipa.herokuapp.com/sensor/pipa_001"
+  
+			const response = await axios.get(url)
+
+      var lista_volumes = [];
+      let lista_datas = [];
+
+      for (let index = 0; index < 100; index++) {
+        lista_volumes[index] = response.data.data[index].volume;
+        lista_datas[index] = response.data.data[index].updatedAt.split("T")[1].substring(0,2)+"h";       
+      }
+      setListaVolumes(lista_volumes)
+      setListaDatas(lista_datas)
+		} catch (e) {
+		alert("Erro ao obter lista de volumes")
+		}
+	};
+
+
   const volumeLineChart = {
-    labels: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+    labels: listaDatas,
     datasets: [
       {
-        data: [20, 45, 28, 80, 99, 43, 12, 44, 55, 77],
-        color: (opacity = 1) => `rgba(0, 0, 139, ${opacity})`, // optional
+        data: listaVolumes,
+        color: (opacity = 1) => `rgba(0, 0, 128, ${opacity})`, // optional
         strokeWidth: 2, // optional
-        withDots: false
+        withDots: false,
       }
     ],
 
@@ -141,20 +171,21 @@ const clearData = async () => {
 
 	useEffect (() => {
     getData();
+    getListaVolumes();
 		getApiDados();
+    //getListaVolumes();
     // var data = {
     //   label:[''],
     //   porcentagem: [0.5],
     //   percentText:50,
       
     // };
-    //setData(data)
+    // setData(data)
+    // setLoading(false)
    // console.log(data)
 	}, []);
 
-
-
-
+  
 	if(loading == false){
     return (
       <SafeAreaView style={styles.container}>      
@@ -194,13 +225,14 @@ const clearData = async () => {
             <Text style={styles.graficoText}>Gráfico de volume</Text>   
             <View style={styles.linhaCampos}></View> 
             <View style={styles.linhaCampoEscura}></View> 
+            <ScrollView horizontal={true}>
               <LineChart
                 data={volumeLineChart}
-                width={screen.width}
+                width={screen.width*8}
                 height={220}
                 chartConfig={lineChartConfig}
               />
-
+            </ScrollView>
   
             <Text style={styles.nivelText}>Nível Atual</Text>   
             <View style={styles.linhaCampos}></View> 
@@ -244,6 +276,22 @@ const clearData = async () => {
 
 
               </DataTable>
+              <Text style={styles.consumoText}>Consumo diário</Text>   
+            <View style={styles.linhaCampos}></View> 
+            <View style={styles.linhaCampoEscura}></View>
+            <Text style={styles.consumo}>Consumo no dia {parseInt(sensorLevel.CurrentDay)-1}/{sensorLevel.CurrentMonth}:</Text>
+            <Text style={{
+              fontWeight:"bold",
+              fontSize:20,
+              marginLeft:screen.width*0.52,
+              marginTop:-screen.height*0.035
+              }}>  {consumo}</Text>
+            <Text style={{  
+              fontSize:14,
+              marginLeft:screen.width*0.68,
+              marginTop:-screen.height*0.035,
+              marginBottom:screen.height*0.1
+              }}> litros</Text>
         </ScrollView >
   </SafeAreaView>  
     );
@@ -268,6 +316,12 @@ const styles  = StyleSheet.create ({
     color: '#abb5be',
     fontSize: 18,
     //fontFamily: 'sans-serif-light'
+  },
+  consumo:{
+    fontSize:14,
+    marginLeft:screen.width*0.08,
+    marginTop:screen.height*0.05,
+    flex:1
   },
   botaoSair:{
     marginTop: -(screen.height * 0.04),
@@ -335,7 +389,13 @@ const styles  = StyleSheet.create ({
     fontSize:16,
     fontWeight:"bold",
   },
-
+  consumoText:{
+    marginTop: screen.height * 0.01,
+    marginLeft:screen.width*0.58,
+    marginRight:screen.width*0.06,
+    fontSize:16,
+    fontWeight:"bold",
+  },
   linhaCampoNivel: {
     borderBottomColor: "black",
     width:screen.width*0.22,
@@ -371,7 +431,8 @@ const lineChartConfig = {
   backgroundGradientToOpacity: 0,
   color: (opacity = 1) => `rgba(128, 128, 128, ${opacity})`,
   strokeWidth: 2, // optional, default 3
-  barPercentage: 0.5,
-  useShadowColorFromDataset: false, // optional
+  barPercentage: 1,
+  decimalPlaces:0, // optional, defaults to 2dp
+  useShadowColorFromDataset: true, // optional
   
 };
