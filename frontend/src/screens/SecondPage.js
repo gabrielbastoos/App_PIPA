@@ -84,10 +84,10 @@ const clearData = async () => {
       var sensorLevel = {
         CurrentDay: response.data.data.updatedAt.split("T")[0].substring(8,10),
         CurrentMonth: response.data.data.updatedAt.split("T")[0].substring(5,7),
-        CLow: response.data.data.sc1?"1":"0",
-        CHigh: response.data.data.sc2?"1":"0",
-        CxLow: response.data.data.scx1?"1":"0",
-        CxHigh: response.data.data.scx2?"1":"0",
+        CHigh: response.data.data.sc1?"1":"0",
+        CLow: response.data.data.sc2?"1":"0",
+        CxHigh: response.data.data.scx1?"1":"0",
+        CxLow: response.data.data.scx2?"1":"0",
         
       };
       setsensorLevel(sensorLevel);
