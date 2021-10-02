@@ -1,5 +1,7 @@
-import React, {useState, useEffect} from 'react';
-import { View, StyleSheet, Text, SafeAreaView,Image, TouchableOpacity,ScrollView,RefreshControl } from 'react-native';
+import Constants from 'expo-constants';
+import * as Notifications from 'expo-notifications';
+import React, {useState, useEffect, useRef } from 'react';
+import { View, StyleSheet, Text, SafeAreaView,Image, TouchableOpacity,ScrollView,RefreshControl, Button } from 'react-native';
 import { ProgressChart, LineChart } from "react-native-chart-kit";
 import { DataTable} from 'react-native-paper';
 import {Badge} from 'react-native-elements';
@@ -13,11 +15,24 @@ const wait = timeout => {
   });
 };
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+var count = 1;
+
 export default function SecondPage({navigation}) {
 
   const [admin, setAdmin] = useState(false)
   const [name, setName] = useState("")
   const [uuid, setUuid] = useState("")
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
 
 const getData = async () => {
   try {
@@ -70,9 +85,9 @@ const clearData = async () => {
 
   async function getApiDados(){
 		try {
-      while(uuid == null){
-      }
-			const url = "http://app-pipa.herokuapp.com/sensor/status/"+uuid
+      //while(uuid == ""){
+      //}
+			const url = "http://app-pipa.herokuapp.com/sensor/status/pipa_001"//+uuid
 			const response = await axios.get(url)
       console.log(response.data.data)
       if(response.data.data.volume>100){
@@ -86,7 +101,8 @@ const clearData = async () => {
       else{
         var data = {
           label:[''],
-          porcentagem: [response.data.data.volume/100],
+          porcentagem: [2900/100],
+          //porcentagem: [response.data.data.volume/100],
           percentText:response.data.data.volume,
           
         };
@@ -113,10 +129,10 @@ const clearData = async () => {
 
   async function getListaVolumes(){
 		try {
-      while(uuid == null){
-      }
+      //while(uuid == ""){
+      //}
       //console.log(uuid)
-      const url = "http://app-pipa.herokuapp.com/sensor/"+uuid
+      const url = "http://app-pipa.herokuapp.com/sensor/pipa_001"//+uuid
   
 			const response = await axios.get(url)
 
@@ -202,6 +218,22 @@ const clearData = async () => {
     getData();
     getListaVolumes();
 		getApiDados();
+    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+    
+    // This listener is fired whenever a notification is received while the app is foregrounded
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+        setNotification(notification);
+    });
+    
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
+    });
+    
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+
     //getListaVolumes();
     // var data = {
     //   label:[''],
@@ -214,11 +246,75 @@ const clearData = async () => {
    // console.log(data)
 	}, []);
 
+  //definindo notificacao push
+  async function registerForPushNotificationsAsync() {
+    let token;
+    if (Constants.isDevice) {
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        alert('Failed to get push token for push notification!');
+        return;
+      }
+      token = (await Notifications.getExpoPushTokenAsync()).data;
+      console.log(token);
+    } else {
+      alert('Must use physical device for Push Notifications');
+    }
+  
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+  
+    return token;
+  }
+  //definindo mensagem da notificacao
+  async function sendPushNotification(expoPushToken) {
+    const message = {
+      to: expoPushToken,
+      //sound: 'default',
+      title: 'CAIXA COM MENOS DE 30%',
+      body: 'Sua caixa está com menos de 30%, recomendamos verificar a cisterna e ligar a bomba.',
+      //data: { someData: 'goes here' },
+    };
+  
+    await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Accept-encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(message),
+    });
+  }
+  console.log("contador antes!!!!  " + count);
+
+  //verificacao para enviar notificao para o usuario, podemos pensar em outra solucao... mas acho que vai ser necessario colocar o contador
+  if((data.porcentagem<=30) && (count%100)==0){
+    console.log("TESTANDO!!!!!!!!!!!!!!!!!!!!!!");
+    //sendPushNotification(expoPushToken);
+
+  }
+  count = count +1; 
+  console.log("contador depois !!!!" + count);
+  console.log("contador com resto!!!!!!!" + (count%100))
+  
+
   
 	if((loading == false) && (loadingOne == false)){
     return (
-      <SafeAreaView style={styles.container}>      
-        <ScrollView
+      <SafeAreaView style={styles.container}>
+         <ScrollView
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>   
           <Text style={styles.headerNameText}>Olá {name}!</Text>
               <Text style={styles.botaoSair}
@@ -327,10 +423,10 @@ const clearData = async () => {
               marginLeft:screen.width*0.58,
               marginTop:-screen.height*0.035,
               marginBottom:screen.height*0.1
-              }}> litros</Text>
-
+              }}> litros</Text> 
         </ScrollView >
-  </SafeAreaView>  
+    
+  </SafeAreaView>      
     );
   }
   else{
@@ -481,3 +577,7 @@ const lineChartConfig = {
   useShadowColorFromDataset: true, // optional
   
 };
+
+
+
+
