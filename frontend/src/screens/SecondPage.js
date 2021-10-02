@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { View, StyleSheet, Text, SafeAreaView,ActivityIndicator, TouchableOpacity,ScrollView,RefreshControl } from 'react-native';
+import { View, StyleSheet, Text, SafeAreaView,Image, TouchableOpacity,ScrollView,RefreshControl } from 'react-native';
 import { ProgressChart, LineChart } from "react-native-chart-kit";
 import { DataTable} from 'react-native-paper';
 import {Badge} from 'react-native-elements';
@@ -40,9 +40,7 @@ const getData = async () => {
 
 const clearData = async () => {
   try {
-    await AsyncStorage.setItem('user_name',"");
-    await AsyncStorage.setItem('uuid',"");
-    await AsyncStorage.setItem('admin',"");
+    await AsyncStorage.clear()
   } 
   catch(e) {
     console.log(e)
@@ -53,12 +51,13 @@ const clearData = async () => {
   const [data, setData] = useState({})
   const [sensorLevel, setsensorLevel] = useState({})
   const [loading, setLoading] = useState(true)
+  const [loadingOne, setLoadingOne] = useState(true)
   const [statusBomba, setStatusBomba] = useState(false)
   const [textoBotao, setTextoBotao] = useState("Ligar a bomba")
   const [colorBotao,setColorBotao] = useState("green")
   const [listaVolumes,setListaVolumes] = useState([])
   const [listaDatas,setListaDatas] = useState([])
-  const [consumo,setConsumo] = useState(200)
+  //const [consumo,setConsumo] = useState(200)
 
   async function Logout(){
 		try {
@@ -71,23 +70,34 @@ const clearData = async () => {
 
   async function getApiDados(){
 		try {
-			const url = "http://app-pipa.herokuapp.com/sensor/status/pipa_001"
+      while(uuid == null){
+      }
+			const url = "http://app-pipa.herokuapp.com/sensor/status/"+uuid
 			const response = await axios.get(url)
       console.log(response.data.data)
-      var data = {
-        label:[''],
-        porcentagem: [response.data.data.volume/100],
-        percentText:response.data.data.volume,
-        
-      };
-
+      if(response.data.data.volume>100){
+        var data = {
+          label:[''],
+          porcentagem: [1],
+          percentText:100.00,
+          
+        };
+      }
+      else{
+        var data = {
+          label:[''],
+          porcentagem: [response.data.data.volume/100],
+          percentText:response.data.data.volume,
+          
+        };
+      }
       var sensorLevel = {
         CurrentDay: response.data.data.updatedAt.split("T")[0].substring(8,10),
         CurrentMonth: response.data.data.updatedAt.split("T")[0].substring(5,7),
-        CLow: response.data.data.sc1?"1":"0",
-        CHigh: response.data.data.sc2?"1":"0",
-        CxLow: response.data.data.scx1?"1":"0",
-        CxHigh: response.data.data.scx2?"1":"0",
+        CLow: response.data.data.sc2?"1":"0",
+        CHigh: response.data.data.sc1?"1":"0",
+        CxLow: response.data.data.scx2?"1":"0",
+        CxHigh: response.data.data.scx1?"1":"0",
         
       };
       setsensorLevel(sensorLevel);
@@ -103,20 +113,39 @@ const clearData = async () => {
 
   async function getListaVolumes(){
 		try {
-
-      const url = "http://app-pipa.herokuapp.com/sensor/pipa_001"
+      while(uuid == null){
+      }
+      //console.log(uuid)
+      const url = "http://app-pipa.herokuapp.com/sensor/"+uuid
   
 			const response = await axios.get(url)
 
+      //console.log(response.data.data)
+      
       var lista_volumes = [];
       let lista_datas = [];
+      // var quantasVezesLigouBomba = 0;
+      // var bomba_state = false;
 
-      for (let index = 0; index < 100; index++) {
+      console.log(response.data.data.length)
+      for (let index = 0; index < response.data.data.length; index++) {
+      //for (let index = 0; index < 100; index++) {
         lista_volumes[index] = response.data.data[index].volume;
         lista_datas[index] = response.data.data[index].updatedAt.split("T")[1].substring(0,2)+"h";       
+        // if(index>1){
+        //   if((response.data.data[index].volume > response.data.data[index-1].volume) && bomba_state == false){
+        //     bomba_state = true
+        //     quantasVezesLigouBomba+=1;
+        //   }
+        //   else if ((response.data.data[index].volume < response.data.data[index-1].volume) && bomba_state == true) (
+        //     bomba_state = false
+        //   )
+       // }
       }
+      //console.log("quantasVezesLigouBomba:"+quantasVezesLigouBomba)
       setListaVolumes(lista_volumes)
       setListaDatas(lista_datas)
+      setLoadingOne(false)
 		} catch (e) {
 		alert("Erro ao obter lista de volumes")
 		}
@@ -186,7 +215,7 @@ const clearData = async () => {
 	}, []);
 
   
-	if(loading == false){
+	if((loading == false) && (loadingOne == false)){
     return (
       <SafeAreaView style={styles.container}>      
         <ScrollView
@@ -279,19 +308,27 @@ const clearData = async () => {
               <Text style={styles.consumoText}>Consumo diário</Text>   
             <View style={styles.linhaCampos}></View> 
             <View style={styles.linhaCampoEscura}></View>
+            <Text style={{  
+              fontSize:14,
+              color:"red",
+              marginLeft:screen.width*0.4,
+              marginTop:screen.height*0.05,
+              //marginBottom:screen.height*0.05
+              }}> Em breve!</Text>
             <Text style={styles.consumo}>Consumo no dia {parseInt(sensorLevel.CurrentDay)-1}/{sensorLevel.CurrentMonth}:</Text>
             <Text style={{
               fontWeight:"bold",
               fontSize:20,
               marginLeft:screen.width*0.52,
               marginTop:-screen.height*0.035
-              }}>  {consumo}</Text>
+              }}>?</Text>
             <Text style={{  
               fontSize:14,
-              marginLeft:screen.width*0.68,
+              marginLeft:screen.width*0.58,
               marginTop:-screen.height*0.035,
               marginBottom:screen.height*0.1
               }}> litros</Text>
+
         </ScrollView >
   </SafeAreaView>  
     );
@@ -299,8 +336,16 @@ const clearData = async () => {
   else{
     return(
       <View style={styles.container}>
-        <ActivityIndicator/>
-      </View>)
+        <Text style={{
+          fontSize:25,
+          marginTop:screen.height*0.3,
+          marginLeft:screen.width*0.3
+        }}>Carregando...</Text>
+        <Image
+          style={{width: screen.width, height: 200}}
+          source={require("../../assets/images/loading.gif")}/>
+      </View>
+      )
   }
 	
 }
