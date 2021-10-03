@@ -17,7 +17,7 @@ export default function SecondPage({navigation}) {
 
   const [admin, setAdmin] = useState(false)
   const [name, setName] = useState("")
-  const [uuid, setUuid] = useState("")
+  const [uuid, setUuid] = useState("pipa_001")
 
 const getData = async () => {
   try {
@@ -35,6 +35,10 @@ const getData = async () => {
   } 
   catch(e) {
     console.log(e)
+  }
+  finally{
+    getListaVolumes(uuid);
+		getApiDados(uuid);
   }
 }
 
@@ -68,11 +72,9 @@ const clearData = async () => {
 		}
 	};
 
-  async function getApiDados(){
+  async function getApiDados(id_sensor){
 		try {
-      while(uuid == null){
-      }
-			const url = "http://app-pipa.herokuapp.com/sensor/status/"+uuid
+			const url = "http://app-pipa.herokuapp.com/sensor/status/"+id_sensor
 			const response = await axios.get(url)
       console.log(response.data.data)
       if(response.data.data.volume>100){
@@ -111,12 +113,11 @@ const clearData = async () => {
 		}
 	};
 
-  async function getListaVolumes(){
+  async function getListaVolumes(id_sensor){
 		try {
-      while(uuid == null){
-      }
+
       //console.log(uuid)
-      const url = "http://app-pipa.herokuapp.com/sensor/"+uuid
+      const url = "http://app-pipa.herokuapp.com/sensor/"+id_sensor
   
 			const response = await axios.get(url)
 
@@ -199,9 +200,9 @@ const clearData = async () => {
 
 
 	useEffect (() => {
-    getData();
-    getListaVolumes();
-		getApiDados();
+    getData();    
+    // getListaVolumes("pipa_001");
+		// getApiDados("pipa_001");
     //getListaVolumes();
     // var data = {
     //   label:[''],
