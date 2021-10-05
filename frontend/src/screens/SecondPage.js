@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import React, {useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, SafeAreaView,Image, TouchableOpacity,ScrollView,RefreshControl, Button } from 'react-native';
+import { View, StyleSheet, Text, SafeAreaView,Image, TouchableOpacity,ScrollView,RefreshControl } from 'react-native';
 import { ProgressChart, LineChart } from "react-native-chart-kit";
 import { DataTable} from 'react-native-paper';
 import {Badge} from 'react-native-elements';
@@ -101,8 +101,7 @@ const clearData = async () => {
       else{
         var data = {
           label:[''],
-          porcentagem: [2900/100],
-          //porcentagem: [response.data.data.volume/100],
+          porcentagem: [response.data.data.volume/100],
           percentText:response.data.data.volume,
           
         };
@@ -277,13 +276,15 @@ const clearData = async () => {
   
     return token;
   }
+
+  const volumeCritico = 30/100
   //definindo mensagem da notificacao
   async function sendPushNotification(expoPushToken) {
     const message = {
       to: expoPushToken,
       //sound: 'default',
-      title: 'CAIXA COM MENOS DE 30%',
-      body: 'Sua caixa está com menos de 30%, recomendamos verificar a cisterna e ligar a bomba.',
+      title: 'CAIXA COM MENOS DE ' + volumeCritico+'%',
+      body: 'Sua caixa está com menos de ' + volumeCritico+'%'+' , recomendamos verificar a cisterna e ligar a bomba.',
       //data: { someData: 'goes here' },
     };
   
@@ -297,18 +298,25 @@ const clearData = async () => {
       body: JSON.stringify(message),
     });
   }
-  console.log("contador antes!!!!  " + count);
-
   //verificacao para enviar notificao para o usuario, podemos pensar em outra solucao... mas acho que vai ser necessario colocar o contador
-  if((data.porcentagem<=30) && (count%100)==0){
-    console.log("TESTANDO!!!!!!!!!!!!!!!!!!!!!!");
-    //sendPushNotification(expoPushToken);
+  //if((data.porcentagem<=30) && (count%10000)==0 || (count===1) ){
+  //  console.log("TESTANDO!!!!!!!!!!!!!!!!!!!!!!");
+  //  sendPushNotification(expoPushToken);
+//
+  //}
+
+  count = count +1;
+  if(data.porcentagem<=30/100){
+    if(count===2 || count%100==0){ 
+      //console.log("TESTANDO!!!!!!!!!!!!!!!!!!!!!!");
+      sendPushNotification(expoPushToken);
+    }
 
   }
-  count = count +1; 
-  console.log("contador depois !!!!" + count);
-  console.log("contador com resto!!!!!!!" + (count%100))
-  
+  console.log("print count " +count);
+  console.log("print count resto " + count%100);
+
+ 
 
   
 	if((loading == false) && (loadingOne == false)){
