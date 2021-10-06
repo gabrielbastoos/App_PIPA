@@ -37,8 +37,8 @@ const getData = async () => {
     console.log(e)
   }
   finally{
-    getListaVolumes(uuid);
-		getApiDados(uuid);
+    getListaVolumes(uuid);		
+    getApiDados(uuid);
   }
 }
 
@@ -103,7 +103,7 @@ const clearData = async () => {
         
       };
       setsensorLevel(sensorLevel);
-      console.log(sensorLevel.CurrentDay)
+      //console.log(sensorLevel.CurrentDay)
       setData(data)
       //console.log(data)
       setLoading(false);
@@ -127,12 +127,18 @@ const clearData = async () => {
       let lista_datas = [];
       // var quantasVezesLigouBomba = 0;
       // var bomba_state = false;
-
-      console.log(response.data.data.length)
+      var contadorIndex = 0;
       for (let index = 0; index < response.data.data.length; index++) {
       //for (let index = 0; index < 100; index++) {
-        lista_volumes[index] = response.data.data[index].volume;
-        lista_datas[index] = response.data.data[index].updatedAt.split("T")[1].substring(0,2)+"h";       
+        var indexDate = new Date(response.data.data[index].updatedAt).getDate()
+        var yesterdayDate = (new Date().getDate())-1
+        //console.log(yesterdayDate )
+        if ( indexDate >= yesterdayDate){
+          //console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+          lista_volumes[contadorIndex] = response.data.data[index].volume;
+          lista_datas[contadorIndex] = response.data.data[index].updatedAt.split("T")[1].substring(0,2)+"h";
+          contadorIndex += 1;
+        }       
         // if(index>1){
         //   if((response.data.data[index].volume > response.data.data[index-1].volume) && bomba_state == false){
         //     bomba_state = true
@@ -258,7 +264,7 @@ const clearData = async () => {
             <ScrollView horizontal={true}>
               <LineChart
                 data={volumeLineChart}
-                width={screen.width*8}
+                width={screen.width*20}
                 height={220}
                 chartConfig={lineChartConfig}
               />
