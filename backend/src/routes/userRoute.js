@@ -1,23 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const UserRepo = require('../repo/userRepo')
+const controller = require('../controllers/userController');
 
-router.post('/createUser', async (req, res) => {
-    let resp = await UserRepo.create(req.body);
-    res.status(resp.status).json(resp);
-});
+router.post('/createUser', controller.create);
 
-router.post('/login', async (req, res) => {
-    let resp = await UserRepo.findUser(req.body);
-     res.status(resp.status).json(resp);
-});
+router.post('/login', controller.login);
 
-router.get('/status/:id', async (req, res) => {
-    const { id } = req.params;
-    let resp = await UserRepo.findById(id);
-    if (resp.hasError){
-       res.sendStatus(500);
-    }
-    res.json(resp);
-});
+router.get('/status/:id', controller.getUser);
+
 module.exports = router;
