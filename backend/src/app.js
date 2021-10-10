@@ -16,10 +16,10 @@ module.exports = () => {
   
     app.use(express.json());
 
-    app.use('/', swaggerUi.serve);
-    app.get('/', swaggerUi.setup(swaggerDocument));
+    app.use('/swagger', swaggerUi.serve);
+    app.get('/swagger', swaggerUi.setup(swaggerDocument));
 
-    //app.use('/', index);
+    app.use('/', index);
     app.use('/sensor', sensorRoute);
     app.use('/user', userRoute);
     app.use('/device', deviceRoute);
