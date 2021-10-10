@@ -8,7 +8,7 @@ import * as env from "../constants/envFile";
 
 export default function RegisterPage({navigation}) {
   
-  const icon = !visible ? 'eye-slash' : 'eye';
+  const [icon,setIconName] = React.useState('eye')
   //const [value, onChangeText] = React.useState(props.value);
   const [visible, setVisibility] = React.useState(false);
 
@@ -20,43 +20,50 @@ export default function RegisterPage({navigation}) {
 
 
   async function Cadastrar() {
-    console.log(env.secret)
-    const passwordEncrypted = CryptoES.AES.encrypt(senha,env.secret).toString();
+    try {
+      const passwordEncrypted = CryptoES.AES.encrypt(senha,env.secret).toString();
 
-    var C = require("crypto-js");
-
-    var Decrypted = C.AES.decrypt(passwordEncrypted, env.secret);
-    var result =Decrypted.toString(C.enc.Utf8);
-
-    console.log(result)
-
-    var jsonCadastro = {
-      "name": nome,      
-      "email":email,
-      "password":passwordEncrypted,
-      "uuid":uuid,
-      "admin":true,
-      "createdBy": credencial
-    };
-    
-
-    console.log(jsonCadastro);
-
-    const url = "http://app-pipa.herokuapp.com/user/createUser"
-    await axios.post(url,jsonCadastro)
-    .then(() => {
-      alert("Cadastro realizado com sucesso")
-      console.log(navigation.navigate("Home"))})
-    .catch(function (error) {
-      console.log(error.response.status);
-      alert("Erro ao efetuar cadastro")
-      // if(error.response.status == 404){
-      //     alert("Usuário não cadastrado")
-      // }
-      // else{
-      //   alert("Erro ao obter os dados")
-      // }
-    });
+      var C = require("crypto-js");
+  
+      var Decrypted = C.AES.decrypt(passwordEncrypted, env.secret);
+      var result =Decrypted.toString(C.enc.Utf8);
+  
+      var jsonCadastro = {
+        "name": nome,      
+        "email":email,
+        "password":passwordEncrypted,
+        "uuid":uuid,
+        "admin":true,
+        "createdBy": credencial
+      };
+      
+      if(email == ''){
+        alert("Erro ao efetuar cadastro, preencha os campos corretamente")
+        return;
+      }
+  
+      console.log(jsonCadastro);
+  
+      const url = "http://app-pipa.herokuapp.com/user/createUser"
+      await axios.post(url,jsonCadastro)
+      .then(() => {
+        alert("Cadastro realizado com sucesso")
+        navigation.navigate("Home")
+        })
+      .catch(function (error) {
+        console.log(error.response.status);
+        alert("Erro ao efetuar cadastro")
+        // if(error.response.status == 404){
+        //     alert("Usuário não cadastrado")
+        // }
+        // else{
+        //   alert("Erro ao obter os dados")
+        // }
+      });
+      
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -133,7 +140,10 @@ export default function RegisterPage({navigation}) {
         <Icon
           name={icon}
           color={'#9e9e9e'}
-          onPress={() => setVisibility(!visible)}
+          onPress={() => {
+            setVisibility(!visible)
+            setIconName(visible ? 'eye' : 'eye-slash')
+          }}
           style={styles.icons}
         />
 
@@ -141,7 +151,7 @@ export default function RegisterPage({navigation}) {
 
       <TouchableOpacity style={styles.submitButton} 
         onPress={() => 
-        {console.log(navigation.navigate("Home"))
+        {
         Cadastrar();
         }}> 
         

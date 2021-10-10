@@ -14,9 +14,10 @@ const storeData = async (response) => {
     await AsyncStorage.setItem("user_name",response.data.data.userName)
     await AsyncStorage.setItem("admin",response.data.data.admin?"true":"false")
     await AsyncStorage.setItem("uuid",response.data.data['uuid'])
+    navigation.navigate("SecondPage")
   }
   catch (e) {
-    console.log("Error",e)
+    console.log("Error:"+e)
   }
   }
 
@@ -28,12 +29,15 @@ async function Login(){
       email:email,
       password:passwordEncrypted
     }
-    console.log(userData)
+    if(userData.email == ""){
+      alert("Preencha o email e senha corretamente")
+      return
+    }
+    //console.log(userData)
     await axios.post(url,userData)
     .then((response) => {
       //console.log(response.data.data)
       storeData(response);
-      console.log(navigation.navigate("SecondPage"))
     })
     .catch(function (error) {
       console.log(error.response.status);
@@ -49,7 +53,7 @@ async function Login(){
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const icon = !visible ? 'eye-slash' : 'eye';
+  const [icon,setIconName] = React.useState('eye')
   //const [value, onChangeText] = React.useState(props.value);
   const [visible, setVisibility] = React.useState(false);
  
@@ -92,7 +96,10 @@ async function Login(){
       <Icon
           name={icon}
           color={'#9e9e9e'}
-          onPress={() => setVisibility(!visible)}
+          onPress={() => {
+            setVisibility(!visible)
+            setIconName(visible ? 'eye' : 'eye-slash')
+          }}
           style={styles.icons}
         />
       <TouchableOpacity style={styles.submitButton} onPress={() => Login()}> 
@@ -101,7 +108,7 @@ async function Login(){
       </KeyboardAvoidingView>
 
         <Text 
-        onPress={() => console.log(navigation.navigate("Cadastro"))}
+        onPress={() => navigation.navigate("Cadastro")}
         style={styles.cadastreText}
         >Cadastre-se</Text>
       <Text 

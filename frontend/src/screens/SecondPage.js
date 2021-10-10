@@ -13,6 +13,8 @@ const wait = timeout => {
   });
 };
 
+const numberOfPointGraph = 100;
+
 export default function SecondPage({navigation}) {
 
   const [admin, setAdmin] = useState(false)
@@ -21,16 +23,14 @@ export default function SecondPage({navigation}) {
 
 const getData = async () => {
   try {
-    var name = await AsyncStorage.getItem('user_name');
-    setName(name);
-    var uuid = await AsyncStorage.getItem('uuid');
-    setUuid(uuid);
-    var admin = await AsyncStorage.getItem('admin');
-    setAdmin(admin);
+    var nameStoraged = await AsyncStorage.getItem('user_name');
+    setName(nameStoraged);
+    var uuidStoraged = await AsyncStorage.getItem('uuid');
+    setUuid(uuidStoraged);
+    var adminStoraged = await AsyncStorage.getItem('admin');
+    setAdmin(adminStoraged);
     
-    console.log(name)
-    console.log(uuid)
-    console.log(admin)
+    console.log("InfoStoraged:\nName:"+nameStoraged+"\nUUID:"+uuidStoraged+"\nIsAdmin?:"+adminStoraged)
     
   } 
   catch(e) {
@@ -51,7 +51,6 @@ const clearData = async () => {
   }
 }
 
-	//const [results, setResults] = useState([])
   const [data, setData] = useState({})
   const [sensorLevel, setsensorLevel] = useState({})
   const [loading, setLoading] = useState(true)
@@ -66,7 +65,7 @@ const clearData = async () => {
   async function Logout(){
 		try {
       clearData();
-      console.log(navigation.navigate("Home"))
+      navigation.navigate("Home")
 		} catch (e) {
 		alert("Erro ao fazer logout")
 		}
@@ -76,7 +75,7 @@ const clearData = async () => {
 		try {
 			const url = "http://app-pipa.herokuapp.com/sensor/status/"+id_sensor
 			const response = await axios.get(url)
-      console.log(response.data.data)
+      //console.log(response.data.data)
       if(response.data.data.volume>100){
         var data = {
           label:[''],
@@ -103,24 +102,19 @@ const clearData = async () => {
         
       };
       setsensorLevel(sensorLevel);
-      //console.log(sensorLevel.CurrentDay)
       setData(data)
-      //console.log(data)
       setLoading(false);
 		} catch (e) {
 		alert("Erro ao obter os dados")
-    console.log(navigation.navigate("Home"))
+    navigation.navigate("Home")
 		}
 	};
 
   async function getListaVolumes(id_sensor){
 		try {
 
-      //console.log(uuid)
       const url = "http://app-pipa.herokuapp.com/sensor/"+id_sensor
-  
 			const response = await axios.get(url)
-
       //console.log(response.data.data)
       
       var lista_volumes = [];
@@ -129,12 +123,9 @@ const clearData = async () => {
       // var bomba_state = false;
       var contadorIndex = 0;
       for (let index = 0; index < response.data.data.length; index++) {
-      //for (let index = 0; index < 100; index++) {
         var indexDate = new Date(response.data.data[index].updatedAt).getDate()
         var yesterdayDate = (new Date().getDate())-1
-        //console.log(yesterdayDate )
-        if ( indexDate >= yesterdayDate){
-          //console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+        if ( (indexDate >= yesterdayDate) && (contadorIndex<numberOfPointGraph)){
           lista_volumes[contadorIndex] = response.data.data[index].volume;
           lista_datas[contadorIndex] = response.data.data[index].updatedAt.split("T")[1].substring(0,2)+"h";
           contadorIndex += 1;
@@ -182,7 +173,6 @@ const clearData = async () => {
 
   async function switchBombaStatus(){
 		try {
-			//const url = "http://app-pipa.herokuapp.com/status"
       var url = "";
       if(statusBomba == false){
         setStatusBomba(true)
@@ -198,7 +188,7 @@ const clearData = async () => {
       }
 
 			const response = await axios.post(url)
-      console.log(response);
+      //console.log(response);
 		} catch (e) {
 		alert("Erro ao obter os dados")
 		}
@@ -207,18 +197,11 @@ const clearData = async () => {
 
 	useEffect (() => {
     getData();    
-    // getListaVolumes("pipa_001");
-		// getApiDados("pipa_001");
-    //getListaVolumes();
     // var data = {
     //   label:[''],
     //   porcentagem: [0.5],
     //   percentText:50,
-      
     // };
-    // setData(data)
-    // setLoading(false)
-   // console.log(data)
 	}, []);
 
   
@@ -264,8 +247,8 @@ const clearData = async () => {
             <ScrollView horizontal={true}>
               <LineChart
                 data={volumeLineChart}
-                width={screen.width*20}
-                height={220}
+                width={screen.width*15}
+                height={screen.height*0.3}
                 chartConfig={lineChartConfig}
               />
             </ScrollView>
