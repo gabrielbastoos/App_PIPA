@@ -62,7 +62,7 @@ async function Login(){
     <SafeAreaView style={styles.container}>           
       <KeyboardAvoidingView behavior={'position'}>
       <View style={styles.header}>
-        <Image source={require("../../assets/images/pipaLogo.png")}
+        <Image source={require("../../assets/icon.png")}
           style={styles.titleImage}
           resizeMode={"contain"}
         />
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
   titleImage: {
     width: screen.width * 1,
     height: 150,
-    marginRight: screen.width * 0.04
+    //marginRight: screen.width * 0.04
 
   }, 
   
