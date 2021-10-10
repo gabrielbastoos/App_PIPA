@@ -34,7 +34,7 @@ class UserRepo{
             // ToDo: log the error to a file
             console.log(error);
             //ToDo: Verificar caso de inserção de uuid não existente na tabela Devices
-            response = new Response(null, true, error.parent.detail, 500);
+            response = new Response(null, true, error, 500);
         });
         return response;
     }
@@ -62,7 +62,7 @@ class UserRepo{
         .catch( (error) => {
             // ToDo: log the error to a file
             console.log(error);
-            response = new Response(null, true, error.parent.detail, 500);
+            response = new Response(null, true, error, 500);
         });
 
         return response;
@@ -79,19 +79,20 @@ class UserRepo{
     }
 
     static async findById(id){
-        let response = new Response();
+        var response;
         await User.findByPk(id)
-        .then( (value) => {
-                response.data = value;
-                response.hasError = false;
-                response.error = null;
+        .then( (user) => {
+            if (user != null){
+                response = new Response(user.toJSON(), false, null, 200);
+            }
+            else{
+                response = new Response(null, true, "User not found", 404);
+            }
         })
         .catch( (error) => {
             // ToDo: log the error to a file
             console.log(error);
-            response.data = null;
-            response.hasError = true;
-            response.error = error;
+            response = new Response(null, true, error, 500);
         });
         return response;
     }
