@@ -1,23 +1,414 @@
 {
-    "swagger": "2.0",
-    "info": {
-      "title": "API PIPA",
-      "description": "Swagger - API PIPA",
-      "version": "1.0"
+  "swagger": "2.0",
+  "info": {
+    "description": "",
+    "version": "V1",
+    "title": "API PIPA",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "email": "apiteam@swagger.io"
     },
-    "produces": ["application/json"],
-    "host": "localhost:3000",
-    "basePath": "/",
-    "paths": {
-      "/status": {
-        "get": {
-          "x-swagger-router-controller": "middleware-name1",
-          "operationId": "swagTest",
-          "tags": ["Sensor Route"],
-          "description": "",
-          "parameters": [],
-          "responses": {}
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host": "localhost:3000",
+  "basePath": "",
+  "tags": [
+    {
+      "name": "Users"
+    },
+    {
+      "name": "Devices"
+    },
+    {
+      "name": "Sensors"
+    }
+  ],
+  "schemes": [
+    "https",
+    "http"
+  ],
+  "paths": {
+    "/user/createUser": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Create new user",
+        "description": "",
+        "operationId": "createUser",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User object that needs to be added",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateUser"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        }
+      }
+    },
+    "/user/login": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Verify if user exists",
+        "description": "",
+        "operationId": "login",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Verify user object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Login"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "404": {
+            "description": "Invalid email or password"
+          }
+        }
+      }
+    },
+    "/user/status/{id}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Finds User by Id",
+        "operationId": "statusUser",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of user",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          }
+        }
+      }
+    },
+    "/device/status/{uuid}": {
+      "get": {
+        "tags": [
+          "Devices"
+        ],
+        "summary": "Finds device by UUID",
+        "operationId": "statusDevice",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "description": "UUID of device",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Device"
+            }
+          }
+        }
+      }
+    },
+    "/device/create": {
+      "post": {
+        "tags": [
+          "Devices"
+        ],
+        "summary": "Create new device",
+        "description": "",
+        "operationId": "createDevice",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Device object that needs to be added",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Device"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Device"
+            }
+          }
+        }
+      }
+    },
+    "/sensor/status/{uuid}": {
+      "get": {
+        "tags": [
+          "Sensors"
+        ],
+        "summary": "Finds last data sensors by UUID",
+        "operationId": "statusSensors",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "description": "UUID of device",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Sensor"
+            }
+          }
+        }
+      }
+    },
+    "/sensor/{uuid}": {
+      "get": {
+        "tags": [
+          "Sensors"
+        ],
+        "summary": "Finds all data sensors by UUID",
+        "operationId": "findAllSensors",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "description": "UUID of device",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Sensor"
+            }
+          }
         }
       }
     }
- }
+  },
+  "definitions": {
+    "CreateUser": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        },
+        "admin": {
+          "type": "boolean"
+        },
+        "createdBy": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "CreateUser"
+      }
+    },
+    "Login": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "Login"
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "uuid": {
+          "type": "string"
+        },
+        "admin": {
+          "type": "boolean"
+        },
+        "createdBy": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "xml": {
+        "name": "User"
+      }
+    },
+    "Device": {
+      "type": "object",
+      "properties": {
+        "uuid": {
+          "type": "string"
+        },
+        "wifi": {
+          "type": "string"
+        },
+        "status": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "xml": {
+        "name": "Device"
+      }
+    },
+    "Sensor": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "sc1": {
+          "type": "boolean"
+        },
+        "sc2": {
+          "type": "boolean"
+        },
+        "scx1": {
+          "type": "boolean"
+        },
+        "scx2": {
+          "type": "boolean"
+        },
+        "volume": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "uuid_device": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "xml": {
+        "name": "Sensor"
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Find out more about Swagger",
+    "url": "http://swagger.io"
+  }
+}
