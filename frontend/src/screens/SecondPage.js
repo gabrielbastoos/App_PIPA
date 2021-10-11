@@ -146,6 +146,7 @@ const clearData = async () => {
       setLoadingOne(false)
 		} catch (e) {
 		alert("Erro ao obter lista de volumes")
+    navigation.navigate("Home")
 		}
 	};
 
@@ -329,7 +330,8 @@ const clearData = async () => {
         <Text style={{
           fontSize:25,
           marginTop:screen.height*0.3,
-          marginLeft:screen.width*0.3
+          marginLeft:screen.width*0.3,
+          color:"#0a009e"
         }}>Carregando...</Text>
         <Image
           style={{width: screen.width, height: 200}}

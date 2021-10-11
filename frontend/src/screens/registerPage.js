@@ -38,7 +38,7 @@ export default function RegisterPage({navigation}) {
       };
       
       if(email == ''){
-        alert("Erro ao efetuar cadastro, preencha os campos corretamente")
+        alert("Error registering, please fill in the corresponding fields")
         return;
       }
   
@@ -47,18 +47,17 @@ export default function RegisterPage({navigation}) {
       const url = "http://app-pipa.herokuapp.com/user/createUser"
       await axios.post(url,jsonCadastro)
       .then(() => {
-        alert("Cadastro realizado com sucesso")
+        alert("Registration done with success")
         navigation.navigate("Home")
         })
       .catch(function (error) {
-        console.log(error.response.status);
-        alert("Erro ao efetuar cadastro")
-        // if(error.response.status == 404){
-        //     alert("Usuário não cadastrado")
-        // }
-        // else{
-        //   alert("Erro ao obter os dados")
-        // }
+        console.log(error.response.data);
+        if(error.response.data.status != 500){
+            alert(error.response.data.error)
+        }
+        else{
+        alert("Error registering")
+        }
       });
       
     } catch (error) {
