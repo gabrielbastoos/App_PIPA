@@ -10,7 +10,7 @@ class SensorRepo{
             list.map( item => {
                 sensorList.push(item.toJSON());
             });
-            response = new Response(sensorList.toJSON(), false, null, 200);
+            response = new Response(sensorList, false, null, 200);
         })
         .catch( error => {
             // ToDo Log the error to a file
