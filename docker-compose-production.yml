@@ -1,0 +1,17 @@
+version: "3.5"
+services:
+  backend-container:
+    container_name: pipa-backend
+    image: pipa-backend-nodejs
+    #restart: on-failure
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dockerfile
+      target: development
+    env_file:
+      ./backend/.env
+    volumes:
+      - ./backend:/backend-container/src
+    ports:
+      - 3000:3000
+
