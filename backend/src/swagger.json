@@ -13,7 +13,7 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     }
   },
-  "host": "app-pipa.herokuapp.com",
+  "host": "https://app-pipa-62052f937478.herokuapp.com/",
   "basePath": "",
   "tags": [
     {
