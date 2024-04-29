@@ -45,7 +45,7 @@ class UserRepo{
         await this.findByEmail(Obj.email)
         .then( (user) => {
             if (user != null){
-                let loginPassDecrypted = Crypto.AES.decrypt(Obj.password, process.env.ENCRYPTED_SECRET);
+                let loginPassDecrypted = Crypto.AES.decrypt(Obj.password, process.env.ENCRYPTED_SECRET); // Tem que ser igual ao env.secret
                 let userPassDecrypted = Crypto.AES.decrypt(user.password, process.env.ENCRYPTED_SECRET);
 
                 if (loginPassDecrypted.toString(Crypto.enc.Utf8) == userPassDecrypted.toString(Crypto.enc.Utf8)){

@@ -44,7 +44,7 @@ export default function RegisterPage({navigation}) {
   
       console.log(jsonCadastro);
   
-      const url = "http://app-pipa.herokuapp.com/user/createUser"
+      const url = "http://localhost:3000/user/createUser" //http://app-pipa.herokuapp.com/
       await axios.post(url,jsonCadastro)
       .then(() => {
         alert("Registration done with success")

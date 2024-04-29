@@ -2,7 +2,7 @@ const mqtt = require('mqtt');
 
 function connection(){
 var options = {
-    host: 'd0b5f4bcb08a43189a9bd4e2bef485db.s1.eu.hivemq.cloud',
+    host: '68ade6ffee994d2dbeb23226441e2d6c.s1.eu.hivemq.cloud',
     port: 8883,
     protocol: 'mqtts',
     username: 'pipauser',

@@ -73,7 +73,7 @@ const clearData = async () => {
 
   async function getApiDados(id_sensor){
 		try {
-			const url = "http://app-pipa.herokuapp.com/sensor/status/"+id_sensor
+			const url = "localhost:3000/sensor/status/"+id_sensor //http://app-pipa.herokuapp.com
 			const response = await axios.get(url)
       //console.log(response.data.data)
       if(response.data.data.volume>100){
@@ -113,7 +113,7 @@ const clearData = async () => {
   async function getListaVolumes(id_sensor){
 		try {
 
-      const url = "http://app-pipa.herokuapp.com/sensor/"+id_sensor
+      const url = "localhost:3000/sensor/"+id_sensor //http://app-pipa.herokuapp.com
 			const response = await axios.get(url)
       //console.log(response.data.data)
       

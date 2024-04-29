@@ -22,8 +22,10 @@ const storeData = async (response) => {
   }
 
 async function Login(){
-    const url = "http://app-pipa.herokuapp.com/user/login"
-    const passwordEncrypted = CryptoES.AES.encrypt(password,env.secret).toString();
+    const instance = axios.create({
+      baseURL: 'http://localhost:3000' //http://app-pipa.herokuapp.com
+    });
+    const passwordEncrypted = CryptoES.AES.encrypt(password,env.secret).toString(); // Tem que ser igual a ENCRYPTED_SECRET
 
     var userData = {
       email:email,
@@ -33,14 +35,14 @@ async function Login(){
       alert("Preencha o email e senha corretamente")
       return
     }
-    //console.log(userData)
-    await axios.post(url,userData)
+    console.log(userData)
+    axios.post('/user/login', userData)
     .then((response) => {
-      //console.log(response.data.data)
+      console.log(response.data.data)
       storeData(response);
     })
-    .catch(function (error) {
-      console.log(error.response.status);
+    .catch((error) => {
+      console.log(error);
       if(error.response.status == 404){
           alert("Usuário não cadastrado")
       }
